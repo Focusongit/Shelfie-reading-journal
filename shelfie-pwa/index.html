@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Shelfie">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="description" content="Shelfie: your personal reading journal. Works offline.">
+<meta name="theme-color" content="#F6F1E7">
+<title>Shelfie · Personal Reading Journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#F6F1E7;
+  --bg-elev:#EFE8DA;
+  --card:#FCF9F2;
+  --ink:#2E251D;
+  --muted:#7A6D60;
+  --line:#E2D8C8;
+  --accent:#B86B4B;
+  --accent-d:#965034;
+  --soft:#EDE3D3;
+  --sage:#6E7F63;
+  --sage-soft:#E3E9DC;
+  --ochre:#C9934B;
+  --danger:#B84A42;
+  --shadow:0 8px 24px rgba(46,37,29,.06);
+  --shadow-sm:0 2px 8px rgba(46,37,29,.05);
+  --r:18px;
+  --font-serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --font-sans:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+body.dark{
+  --bg:#1B1714;
+  --bg-elev:#231E1A;
+  --card:#2A231E;
+  --ink:#F2EBE0;
+  --muted:#A39688;
+  --line:#3C332C;
+  --accent:#D68463;
+  --accent-d:#E39A7B;
+  --soft:#362E27;
+  --sage:#8FA382;
+  --sage-soft:#2B3327;
+  --ochre:#DDA85B;
+  --danger:#D96B63;
+  --shadow:0 10px 28px rgba(0,0,0,.35);
+  --shadow-sm:0 2px 10px rgba(0,0,0,.25);
+}
+html,body{
+  margin:0;
+  background:var(--bg);
+  background-image:radial-gradient(at 15% 0%, rgba(184,107,75,.05) 0px, transparent 50%),
+                   radial-gradient(at 85% 10%, rgba(110,127,99,.06) 0px, transparent 50%);
+  color:var(--ink);
+  font:15px/1.55 var(--font-sans);
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,.brand,.serif{font-family:var(--font-serif);letter-spacing:-.015em}
+h1{font-size:28px;font-weight:600;margin:0 0 4px;line-height:1.2}
+h2{font-size:21px;font-weight:600;margin:0 0 6px;line-height:1.25}
+h3{margin:0 0 12px;font-size:15px;font-weight:700;letter-spacing:.01em;color:var(--ink)}
+.muted{color:var(--muted)}.small{font-size:13px}.hidden{display:none!important}
+
+/* Header & Navigation */
+.top{
+  position:sticky;top:0;z-index:20;
+  display:flex;align-items:center;gap:16px;
+  padding:14px 28px;
+  background:color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.brand{
+  display:flex;align-items:center;gap:9px;
+  font-weight:700;font-size:22px;color:var(--ink);
+}
+.brand-mark{
+  width:32px;height:32px;border-radius:10px;
+  background:var(--accent);color:#FCF9F2;
+  display:inline-flex;align-items:center;justify-content:center;
+  box-shadow:0 3px 10px rgba(184,107,75,.28);
+}
+.brand span{color:var(--accent)}
+nav.tabs{
+  display:flex;gap:4px;margin-left:auto;
+  background:var(--bg-elev);
+  padding:4px;border-radius:999px;
+  border:1px solid var(--line);
+}
+.tab{
+  border:0;background:none;
+  padding:7px 14px;border-radius:999px;
+  cursor:pointer;color:var(--muted);
+  font-weight:600;font-size:13.5px;
+  display:inline-flex;align-items:center;gap:6px;
+  transition:all .18s ease;
+}
+.tab:hover{color:var(--ink)}
+.tab.on{background:var(--card);color:var(--accent-d);box-shadow:var(--shadow-sm)}
+.tab svg{width:15px;height:15px;stroke-width:2}
+
+main{max-width:1180px;margin:0 auto;padding:26px 28px 120px}
+
+/* Buttons & Inputs */
+.btn{
+  border:1px solid var(--line);background:var(--card);
+  padding:8px 15px;border-radius:12px;
+  cursor:pointer;font-weight:600;font-size:13.5px;
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  white-space:nowrap;transition:all .16s ease;
+  box-shadow:var(--shadow-sm);
+}
+.btn:hover{border-color:var(--accent);transform:translateY(-1px)}
+.btn.primary{
+  background:var(--accent);border-color:var(--accent);color:#FCF9F2;
+  box-shadow:0 4px 14px rgba(184,107,75,.25);
+}
+.btn.primary:hover{background:var(--accent-d);border-color:var(--accent-d)}
+.btn.sm{padding:5px 11px;font-size:12.5px;border-radius:10px}
+.btn.danger{color:var(--danger)}.btn.danger:hover{border-color:var(--danger);background:color-mix(in srgb,var(--danger) 8%,var(--card))}
+.btn.ghost{background:none;border-color:transparent;box-shadow:none}.btn.ghost:hover{background:var(--soft);border-color:transparent;transform:none}
+.link{background:none;border:0;color:var(--accent-d);cursor:pointer;padding:0;font-weight:600;text-align:left;text-decoration:underline;text-underline-offset:3px}
+
+.in{
+  width:100%;height:42px;padding:0 13px;
+  border:1px solid var(--line);border-radius:12px;
+  background-color:var(--card);outline:none;min-width:0;
+  transition:border-color .15s, box-shadow .15s;
+}
+textarea.in{height:auto;padding:10px 13px;resize:vertical;min-height:74px}
+.in:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 14%,transparent)}
+.in.auto{width:auto}.in.num{width:90px;text-align:center}
+select.in{
+  -webkit-appearance:none;appearance:none;padding-right:34px;cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%237A6D60' stroke-width='2'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+}
+input[type=date].in{-webkit-appearance:none;appearance:none;display:flex;align-items:center}
+input[type=date].in::-webkit-date-and-time-value{text-align:left}
+.row{display:flex;gap:8px;align-items:center;margin:8px 0}.wrap{flex-wrap:wrap}
+
+/* Hero Banner */
+.hero{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  gap:16px;margin-bottom:22px;flex-wrap:wrap;
+}
+.hero-pills{display:flex;gap:8px;flex-wrap:wrap}
+.hpill{
+  background:var(--card);border:1px solid var(--line);
+  padding:6px 12px;border-radius:999px;
+  font-size:12.5px;font-weight:600;color:var(--muted);
+  display:inline-flex;align-items:center;gap:6px;
+}
+.hpill b{color:var(--ink)}
+
+/* Currently Reading Strip */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin:24px 0 12px}
+.sec{font-family:var(--font-serif);font-size:19px;font-weight:600;margin:0}
+.strip{display:flex;gap:14px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:thin}
+.rcard{
+  display:flex;gap:14px;min-width:290px;max-width:320px;
+  background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r);padding:13px;
+  box-shadow:var(--shadow);cursor:pointer;
+  transition:transform .18s ease, border-color .18s ease;
+}
+.rcard:hover{transform:translateY(-2px);border-color:var(--accent)}
+.rcv{width:66px;flex:none}.rbody{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:space-between}
+
+/* Filters & Chips */
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0 10px}
+.toolbar .search{flex:1;min-width:240px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.chip{
+  border:1px solid var(--line);background:var(--card);
+  border-radius:999px;padding:5px 13px;
+  cursor:pointer;font-size:12.5px;font-weight:600;color:var(--muted);
+  transition:all .15s ease;
+}
+.chip:hover{border-color:var(--accent);color:var(--ink)}
+.chip.on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.chip.sm{padding:3px 10px;font-size:12px}
+.tchip{
+  display:inline-flex;align-items:center;gap:3px;
+  background:var(--soft);color:var(--accent-d);
+  border:1px solid var(--line);
+  border-radius:999px;padding:3px 5px 3px 10px;
+  font-size:12.5px;font-weight:600;line-height:1.4;
+}
+.tchip button{border:0;background:none;cursor:pointer;color:inherit;font-size:15px;line-height:1;padding:0 5px;border-radius:50%}
+.tchip button:hover{background:var(--line)}
+
+/* Book Grid & Covers */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(154px,1fr));gap:20px;margin-top:16px}
+.card{cursor:pointer;transition:transform .2s ease}
+.card:hover{transform:translateY(-4px)}
+.cvwrap{
+  position:relative;border-radius:10px 13px 13px 10px;
+  box-shadow:var(--shadow);overflow:hidden;
+  background:var(--soft);
+}
+.cvwrap::after{
+  content:"";position:absolute;inset:0 auto 0 0;width:8px;
+  background:linear-gradient(90deg,rgba(255,255,255,.28),rgba(0,0,0,.09) 55%,rgba(255,255,255,.12));
+  pointer-events:none;
+}
+.cv{width:100%;aspect-ratio:2/3;object-fit:cover;display:block}
+
+/* Editorial Typography Cover Card (for AO3 / Fanfic / Missing Covers) */
+.typo{
+  position:relative;
+  display:flex;flex-direction:column;justify-content:space-between;align-items:center;
+  text-align:center;padding:16px 14px;overflow:hidden;
+}
+.typo-frame{
+  position:absolute;inset:7px;
+  border:1px solid currentColor;opacity:.26;
+  border-radius:6px 9px 9px 6px;pointer-events:none;
+}
+.typo .tt{
+  font-family:var(--font-serif);font-weight:600;font-size:14.5px;line-height:1.25;
+  display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;
+  overflow:hidden;word-break:break-word;margin:auto 0;
+}
+.rcv .typo,.sitem .typo{padding:10px 8px}
+.rcv .typo .tt,.sitem .typo .tt{font-size:11px;-webkit-line-clamp:3}
+.rcv .typo .ta,.sitem .typo .ta{display:none}
+.typo-bot{display:flex;flex-direction:column;align-items:center;gap:2px;width:100%}
+.typo .ta{font-size:11px;font-weight:600;opacity:.82;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.typo .tk{font-size:9.5px;text-transform:uppercase;letter-spacing:1.2px;opacity:.62;font-weight:700}
+
+.badge{
+  position:absolute;top:7px;right:7px;
+  background:color-mix(in srgb,var(--card) 92%,transparent);
+  backdrop-filter:blur(4px);
+  border:1px solid var(--line);
+  border-radius:999px;padding:2px 7px;font-size:12px;
+  box-shadow:var(--shadow-sm);
+}
+.owned{
+  position:absolute;bottom:7px;left:10px;
+  background:var(--sage);color:#FCF9F2;
+  border-radius:6px;padding:1px 7px;
+  font-size:10.5px;font-weight:700;letter-spacing:.02em;
+}
+.ct{
+  font-weight:700;font-size:14px;margin-top:9px;line-height:1.3;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.ca{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+
+/* Progress Bars & Stars */
+.bar{height:6px;background:var(--soft);border-radius:99px;margin-top:7px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--sage),var(--accent));border-radius:99px;transition:width .25s ease}
+.bar.big{height:9px}
+.stars{display:inline-flex;font-size:13px;letter-spacing:1px;margin-top:2px}
+.star{color:var(--line);background:none;border:0;padding:0 1px;cursor:default}
+button.star{cursor:pointer;font-size:23px;transition:transform .1s}
+button.star:hover{transform:scale(1.15)}
+.star.on{color:var(--ochre)}
+
+/* Empty State */
+.empty{
+  text-align:center;padding:56px 24px;color:var(--muted);
+  background:var(--card);border:1px dashed var(--line);border-radius:22px;margin-top:16px;
+}
+.empty .big{font-size:44px;margin-bottom:8px}
+
+/* Modals */
+.modal{
+  position:fixed;inset:0;background:rgba(28,22,17,.52);
+  backdrop-filter:blur(4px);z-index:50;
+  display:flex;align-items:center;justify-content:center;padding:16px;
+}
+.modal-box{
+  position:relative;background:var(--bg);border:1px solid var(--line);
+  border-radius:24px;width:100%;max-width:800px;max-height:92vh;
+  overflow:auto;padding:26px;box-shadow:0 24px 64px rgba(24,18,14,.3);
+}
+.confirm-box{max-width:440px;padding:24px}
+.x{
+  position:absolute;top:16px;right:16px;
+  border:1px solid var(--line);background:var(--card);
+  width:34px;height:34px;border-radius:50%;cursor:pointer;z-index:2;
+  display:flex;align-items:center;justify-content:center;
+}
+.x:hover{border-color:var(--accent)}
+
+/* Detail View */
+.dhead{display:flex;gap:22px}
+.dcover{width:162px;flex:none}
+.dinfo{flex:1;min-width:0;padding-right:32px}
+.pill{
+  display:inline-block;background:var(--soft);color:var(--accent-d);
+  border:1px solid var(--line);border-radius:999px;
+  padding:2px 11px;font-size:12px;font-weight:700;margin-right:6px;
+}
+.pill.sage{background:var(--sage-soft);color:var(--sage)}
+.author{font-weight:600;color:var(--muted);margin-top:2px}
+.prog{display:flex;align-items:center;gap:8px;margin-top:10px;font-weight:700}
+.dsec{
+  background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r);padding:18px;margin-top:14px;box-shadow:var(--shadow-sm);
+}
+.lrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:8px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.lrow:last-child{border-bottom:0}
+.lrow label{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted)}
+.addrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.addrow .in{flex:1;min-width:110px}
+.addrow .combo{flex:2;min-width:200px}
+blockquote{
+  margin:0;padding:10px 14px;
+  border-left:3px solid var(--accent);
+  background:var(--soft);border-radius:0 12px 12px 0;
+  flex:1;white-space:pre-wrap;font-family:var(--font-serif);font-size:14.5px;
+}
+.moods{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.mood{display:flex;justify-content:space-between;align-items:center;background:var(--bg-elev);padding:7px 12px;border-radius:12px}
+.mdot{border:0;background:none;cursor:pointer;font-size:17px;padding:0 2px;filter:grayscale(1);opacity:.28;transition:transform .1s}
+.mdot.on{filter:none;opacity:1}
+
+/* Forms & Auto-Fill Lookup */
+.form{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px;margin-top:14px;align-items:start}
+.form .full{grid-column:1/-1}
+.fld{display:flex;flex-direction:column;gap:6px;min-width:0;margin:0}
+.fl{display:block;font-size:13px;font-weight:600;color:var(--muted);line-height:18px;height:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fl small{font-weight:500;opacity:.8;font-size:12px}
+.trio{grid-column:1/-1;display:grid;grid-template-columns:2fr 1fr 1fr;gap:16px}
+.tbox{
+  height:42px;display:flex;align-items:center;gap:8px;padding:0 12px;
+  border:1px solid var(--line);border-radius:12px;background:var(--card);
+  cursor:pointer;font-weight:600;font-size:13.5px;white-space:nowrap;
+}
+.tbox input{width:17px;height:17px;accent-color:var(--accent);margin:0}
+.fcover{display:flex;gap:18px;align-items:flex-start;background:var(--card);padding:14px;border-radius:16px;border:1px solid var(--line)}
+.fcover .col{display:flex;flex-direction:column;gap:8px;flex:1;min-width:0}
+.swatches{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:2px}
+.swatch{
+  width:22px;height:22px;border-radius:50%;border:2px solid var(--line);
+  cursor:pointer;padding:0;transition:transform .12s;
+}
+.swatch:hover{transform:scale(1.15)}
+.swatch.on{border-color:var(--ink);box-shadow:0 0 0 2px var(--card) inset}
+.tog{display:flex;align-items:center;gap:8px;margin:6px 0;cursor:pointer;font-weight:500}
+.tog input{accent-color:var(--accent)}
+
+.lookup{grid-column:1/-1;background:var(--bg-elev);border:1px solid var(--line);border-radius:16px;padding:15px}
+.lookup .row{margin:0}
+.results{display:flex;flex-direction:column;gap:7px;max-height:340px;overflow:auto}
+.results:not(:empty){margin-top:11px}
+.res{
+  display:flex;gap:11px;align-items:center;
+  background:var(--card);border-radius:12px;padding:9px;
+  cursor:pointer;border:1px solid var(--line);transition:border-color .15s;
+}
+.res:hover{border-color:var(--accent)}
+.res img,.res .ph{width:40px;height:60px;object-fit:cover;border-radius:6px;flex:none;background:var(--soft);display:block}
+.src{
+  display:inline-block;font-size:10px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.5px;
+  background:var(--soft);color:var(--accent-d);
+  border:1px solid var(--line);border-radius:6px;padding:1px 6px;margin-top:4px;
+}
+
+/* Searchable Combobox */
+.combo{position:relative;min-width:0}
+.cbox.in{display:flex;flex-wrap:wrap;align-items:center;gap:6px;height:auto;min-height:42px;padding:5px 8px;cursor:text}
+.combo:not(.multi) .cbox.in{padding:0 13px}
+.cbox.in:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 14%,transparent)}
+.cchips{display:contents}
+.cin{flex:1;min-width:90px;height:30px;border:0;outline:none;background:none;padding:0 4px}
+.combo:not(.multi) .cin{height:40px;padding:0}
+.dd{
+  position:absolute;left:0;right:0;top:calc(100% + 5px);z-index:60;
+  background:var(--card);border:1px solid var(--line);
+  border-radius:14px;box-shadow:0 14px 34px rgba(36,26,18,.18);
+  max-height:240px;overflow:auto;padding:5px;
+}
+.opt{padding:8px 10px;border-radius:9px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:13.5px}
+.opt.hi,.opt:hover{background:var(--soft)}
+.opt mark{background:none;color:var(--accent-d);font-weight:700}
+.opt.new{color:var(--accent-d);font-weight:600}
+.dd .none{padding:8px 10px;color:var(--muted);font-size:13px}
+
+/* Panels, Stats & Charts */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;margin-top:16px;box-shadow:var(--shadow-sm)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:12px;margin:16px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:15px 17px;box-shadow:var(--shadow-sm)}
+.kpi b{display:block;font-family:var(--font-serif);font-size:25px;font-weight:600;color:var(--ink);margin:2px 0}
+.kpi span{font-size:12px;color:var(--muted);font-weight:600}
+.cols2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.vchart{display:flex;align-items:flex-end;gap:7px;height:175px;margin-top:10px}
+.vcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:4px}
+.vbar{width:100%;max-width:34px;background:linear-gradient(180deg,var(--accent),color-mix(in srgb,var(--accent) 45%,var(--soft)));border-radius:8px 8px 4px 4px;min-height:3px}
+.vlab{font-size:11px;color:var(--muted);font-weight:600}.vval{font-size:11px;font-weight:700}
+.hrow{display:grid;grid-template-columns:125px 1fr 64px;gap:10px;align-items:center;margin:8px 0;font-size:13px}
+.hrow .lab{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.hrow b{text-align:right;font-size:12.5px}
+.htrack{background:var(--soft);border-radius:99px;height:10px;overflow:hidden}
+.hfill{background:var(--sage);height:100%;border-radius:99px}
+
+/* Calendar */
+.calhead{display:flex;align-items:center;gap:10px;margin:16px 0}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:7px}
+.cdow{text-align:center;font-size:12px;font-weight:700;color:var(--muted);padding-bottom:4px}
+.cday{
+  min-height:92px;background:var(--card);border:1px solid var(--line);
+  border-radius:14px;padding:7px;cursor:pointer;
+  display:flex;flex-direction:column;gap:4px;transition:border-color .15s;
+}
+.cday:hover{border-color:var(--accent)}
+.cday.out{opacity:.38}.cday.today{border-color:var(--accent);border-width:2px}
+.cday.sel{box-shadow:0 0 0 2px var(--accent)}.cday.has{background:color-mix(in srgb,var(--soft) 55%,var(--card))}
+.dn{font-size:12px;font-weight:700}.thumbs{display:flex;flex-wrap:wrap;gap:3px}
+.thumb{width:21px;height:31px;border-radius:4px;overflow:hidden;display:inline-block;flex:none;box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.thumb img,.thumb i{width:100%;height:100%;object-fit:cover;display:block}
+.opt .thumb{width:24px;height:36px}
+.more{font-size:10px;color:var(--muted);font-weight:700}.cmin{font-size:10.5px;color:var(--accent-d);font-weight:700;margin-top:auto}
+
+/* Series Cards */
+.scard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;box-shadow:var(--shadow-sm);margin-top:14px}
+.sthumbs{display:flex;gap:12px;overflow-x:auto;margin-top:14px;padding-bottom:4px}
+.sthumbs .sitem{width:76px;flex:none;cursor:pointer;font-size:11.5px;font-weight:600;text-align:center}
+
+/* Floating Timer */
+#timerBar{
+  position:fixed;right:20px;bottom:20px;z-index:40;
+  background:var(--card);border-radius:18px;
+  box-shadow:0 12px 34px rgba(36,28,20,.22);
+  padding:10px 14px;display:flex;align-items:center;gap:11px;
+  max-width:430px;border:1px solid var(--accent);
+}
+#timerBar .thumb{width:30px;height:45px}.tinfo{min-width:0;flex:1}
+.ttl{font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:165px}
+.clock{font-variant-numeric:tabular-nums;font-weight:700;font-size:18px;color:var(--accent-d);font-family:var(--font-serif)}
+
+#toast{
+  position:fixed;left:50%;top:20px;transform:translateX(-50%);
+  background:var(--ink);color:var(--bg);
+  padding:10px 20px;border-radius:999px;z-index:99;
+  font-weight:600;font-size:13.5px;opacity:0;pointer-events:none;
+  transition:opacity .2s;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:90vw;text-align:center;
+}
+#toast.show{opacity:1}
+
+@media(max-width:760px){
+  .top{padding:12px 16px}
+  nav.tabs{
+    position:fixed;bottom:0;left:0;right:0;margin:0;
+    justify-content:space-around;background:var(--card);
+    border-top:1px solid var(--line);border-radius:0;
+    padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:30;
+  }
+  .tab{flex-direction:column;font-size:11px;padding:5px 8px;gap:3px}
+  .top .btn.primary{margin-left:auto}
+  main{padding:18px 16px 130px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:14px}
+  .modal{padding:0;align-items:flex-end}.modal-box{border-radius:24px 24px 0 0;max-height:94vh;padding:20px}
+  .confirm-box{border-radius:22px;margin:16px}
+  .dhead{flex-direction:column}.dcover{width:126px}
+  .form,.cols2{grid-template-columns:1fr}
+  .trio{grid-template-columns:1fr 1fr}.trio>.fld:first-child{grid-column:1/-1}
+  .in,.cin{font-size:16px}
+  .cday{min-height:62px;padding:4px}.cday .thumb{width:13px;height:19px}
+  #timerBar{left:12px;right:12px;bottom:76px;max-width:none}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <span class="brand-mark">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    </span>
+    Shelfie<span>.</span>
+  </div>
+  <nav class="tabs">
+    <button class="tab" data-act="nav" data-v="library">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+      Library
+    </button>
+    <button class="tab" data-act="nav" data-v="series">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="16" width="18" height="4" rx="1"/></svg>
+      Series
+    </button>
+    <button class="tab" data-act="nav" data-v="stats">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Stats
+    </button>
+    <button class="tab" data-act="nav" data-v="calendar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Calendar
+    </button>
+    <button class="tab" data-act="nav" data-v="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </button>
+  </nav>
+  <button class="btn primary" data-act="add">+ Add Book</button>
+</header>
+
+<main id="app"><p class="muted">Opening your reading journal…</p></main>
+<div id="modal" class="modal hidden"><div class="modal-box" id="modalBox"></div></div>
+<div id="confirmModal" class="modal hidden" style="z-index:70"><div class="modal-box confirm-box" id="confirmBox"></div></div>
+<div id="timerBar" class="hidden"></div>
+<div id="toast"></div>
+
+<script>
+/* ---------- constants ---------- */
+const DEFAULT_TYPES=['Novel','Light novel','Manga','Manhwa','Manhua','Web novel','Fanfiction','Other'];
+const DEFAULT_LISTS={
+  genres:['Action','Adventure','Comedy','Contemporary','Dark Fantasy','Drama','Fantasy','Historical','Horror','Isekai','Martial Arts','Mecha','Murim','Mystery','Non-fiction','Poetry','Psychological','Romance','School Life','Sci-Fi','Slice of Life','Sports','Supernatural','Thriller','Tragedy','Wuxia','Xianxia','Young Adult'],
+  tags:['Age Gap','Angst','Anti-hero','BL','Childhood Friends','Enemies to Lovers','Fake Dating','Forced Proximity','Found Family','Friends to Lovers','GL','Grumpy x Sunshine','Happy Ending','Hurt/Comfort','Magic Academy','Morally Grey','Office Romance','Overpowered MC','Regression','Reincarnation','Revenge','Royalty','Second Chance','Slow Burn','Strong Female Lead','System','Time Travel','Transmigration','Villainess'],
+  stores:['Amazon','Apple Books','B2S','Book fair','Google Play Books','Kindle','Kinokuniya','Lazada','Meb','Naiin','ookbee','SE-ED','Secondhand','Shopee','Tapas','Webtoon']
+};
+const DEFAULT_SETTINGS={
+  currency:'฿',
+  dark:false,
+  features:{description:true,moods:true,notes:true,quotes:true,favPages:true,spending:true,source:true,timer:true,series:true}
+};
+const FEAT={
+  description:'Description',
+  moods:'Mood ratings (spice, fluff, tears, humor)',
+  notes:'Personal notes',
+  quotes:'Favorite quotes',
+  favPages:'Favorite pages & chapters',
+  spending:'Spending & purchases',
+  source:'Online reading source & URL (AO3, Webtoon…)',
+  timer:'Reading timer & session log',
+  series:'Series grouping'
+};
+const STATUSES={want:'Want to Read',reading:'Currently Reading',hold:'On Hold',finished:'Finished',dropped:'Dropped'};
+const ST_EMO={want:'🔖',reading:'📖',hold:'⏸️',finished:'🌿',dropped:'🍂'};
+const MOODS=[['spice','🌶️','Spice'],['fluff','☁️','Fluff'],['tears','💧','Tears'],['humor','😂','Humor']];
+const PMODES={page:'Pages',chapter:'Chapters',volume:'Volumes',ongoing:'Ongoing (chapters, no end)',none:'No tracking'};
+const UNIT={page:'p.',chapter:'Ch.',volume:'Vol.',ongoing:'Ch.'};
+
+/* Curated Earth-Tone Typography Cover Palettes: [bgTop, bgBot, inkColor, swatchName] */
+const EARTH_PALS=[
+  ['#EFE5D5','#E2D1B8','#3B2B20','Warm Parchment'],
+  ['#E1E8DA','#CDD8C3','#263323','Sage Leaf'],
+  ['#EEDBD0','#E1C6B5','#3D271E','Terracotta Clay'],
+  ['#F2E7CE','#E5D3AD','#382C1B','Honey Oat'],
+  ['#E7E1D8','#D6CCC0','#2E2924','Sandstone'],
+  ['#E6E8D7','#D5D8C0','#2C301E','Olive Moss'],
+  ['#ECDAD7','#DFC4C0','#3B2423','Dusty Rose Clay'],
+  ['#DFE3E0','#CCD2CD','#252A29','River Stone']
+];
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const today=()=>iso(new Date());
+const csv=s=>[...new Set(String(s||'').split(',').map(x=>x.trim()).filter(Boolean))];
+const lines=s=>String(s||'').split('\n').map(x=>x.trim()).filter(Boolean);
+const fmtMin=m=>{m=Math.round(+m||0);return m<60?m+'m':Math.floor(m/60)+'h'+(m%60?' '+m%60+'m':'')};
+const fmtClock=ms=>{const s=Math.floor(ms/1000);return `${pad(Math.floor(s/3600))}:${pad(Math.floor(s%3600/60))}:${pad(s%60)}`};
+const fmtDate=d=>d?new Date(d+'T00:00').toLocaleDateString(undefined,{day:'numeric',month:'short',year:'numeric'}):'—';
+const money=n=>state.settings.currency+(+n||0).toLocaleString(undefined,{maximumFractionDigits:2});
+const safeUrl=u=>/^https?:\/\//i.test(u||'')?u:'';
+const safeImg=u=>/^(data:image\/|https?:\/\/)/i.test(u||'')?u:'';
+const hash=s=>{let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))|0;return Math.abs(h)};
+const palOf=it=>{
+  const idx=(it.coverTheme!==undefined && it.coverTheme!=='' && it.coverTheme!==null)
+    ? (+it.coverTheme % EARTH_PALS.length)
+    : (hash(it.title||'') % EARTH_PALS.length);
+  return EARTH_PALS[idx] || EARTH_PALS[0];
+};
+const grad=it=>{const p=palOf(it);return `linear-gradient(155deg,${p[0]},${p[1]})`};
+const strip=h=>{const t=document.createElement('textarea');t.innerHTML=String(h||'').replace(/<br\s*\/?>/gi,'\n').replace(/<\/p>/gi,'\n\n').replace(/<[^>]+>/g,'');return t.value.replace(/\n{3,}/g,'\n\n').trim()};
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove('show'),2400)}
+function download(text,name,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+
+/* Non-blocking custom confirmation dialog (avoids sandboxed window.confirm issues) */
+function askDialog({title='Confirm',message='',confirmText='Confirm',cancelText='Cancel',danger=false}){
+  return new Promise(resolve=>{
+    const box=$('#confirmBox'),wrap=$('#confirmModal');
+    box.innerHTML=`<h2 style="margin-bottom:8px">${esc(title)}</h2>
+      <p class="muted" style="margin:0 0 18px;white-space:pre-line">${esc(message)}</p>
+      <div class="row" style="justify-content:flex-end;margin:0">
+        <button type="button" class="btn" id="dlg-cancel">${esc(cancelText)}</button>
+        <button type="button" class="btn ${danger?'danger':'primary'}" id="dlg-ok">${esc(confirmText)}</button>
+      </div>`;
+    wrap.classList.remove('hidden');
+    const done=v=>{wrap.classList.add('hidden');resolve(v)};
+    $('#dlg-ok').onclick=()=>done(true);
+    $('#dlg-cancel').onclick=()=>done(false);
+    wrap.onclick=e=>{if(e.target===wrap)done(false)};
+  });
+}
+
+/* ---------- storage (IndexedDB, localStorage fallback) ---------- */
+let state,_db,saveT;
+function idb(){if(_db)return Promise.resolve(_db);return new Promise((res,rej)=>{if(!window.indexedDB)return rej('no idb');const r=indexedDB.open('shelfie-db',1);r.onupgradeneeded=()=>r.result.createObjectStore('kv');r.onsuccess=()=>{_db=r.result;res(_db)};r.onerror=()=>rej(r.error)})}
+async function loadState(){let s=null;try{const db=await idb();s=await new Promise((res,rej)=>{const q=db.transaction('kv').objectStore('kv').get('state');q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}catch(e){try{s=JSON.parse(localStorage.getItem('shelfie-state'))}catch(_){}}return normalize(s)}
+async function saveNow(){clearTimeout(saveT);const data=JSON.parse(JSON.stringify(state));try{const db=await idb();await new Promise((res,rej)=>{const tx=db.transaction('kv','readwrite');tx.objectStore('kv').put(data,'state');tx.oncomplete=res;tx.onerror=()=>rej(tx.error)})}catch(e){try{localStorage.setItem('shelfie-state',JSON.stringify(data))}catch(err){toast('⚠️ Could not save — storage may be full')}}}
+function save(){clearTimeout(saveT);saveT=setTimeout(saveNow,250)}
+function mergeList(L,vals){vals.forEach(v=>{v=String(v||'').trim();if(v&&!L.some(x=>x.toLowerCase()===v.toLowerCase()))L.push(v)});return L.sort((a,b)=>a.localeCompare(b))}
+const addToList=(k,vals)=>mergeList(state.settings[k],vals);
+function normalize(s){
+  s=s||{};const raw=s.settings||{};
+  s.items=Array.isArray(s.items)?s.items:[];
+  s.series=Array.isArray(s.series)?s.series:[];
+  s.items.forEach(normItem);
+  s.settings=Object.assign({},DEFAULT_SETTINGS,raw);
+  s.settings.features=Object.assign({},DEFAULT_SETTINGS.features,raw.features||{});
+  s.settings.types=Array.isArray(raw.types)&&raw.types.length?[...raw.types]:[...DEFAULT_TYPES];
+  for(const k in DEFAULT_LISTS){
+    if(Array.isArray(raw[k]))s.settings[k]=[...raw[k]];
+    else{
+      const used=k==='stores'?s.items.flatMap(i=>i.purchases.map(p=>p.store)):s.items.flatMap(i=>i[k]);
+      s.settings[k]=mergeList([...DEFAULT_LISTS[k]],used);
+    }
+  }
+  s.timer=s.timer||null;
+  return s;
+}
+function normItem(it){
+  const d={id:uid(),title:'Untitled',altTitles:[],author:'',type:'Novel',cover:'',coverTheme:'',description:'',genres:[],tags:[],collections:[],seriesId:'',seriesOrder:'',status:'want',owned:false,progressMode:'page',progress:0,total:'',rating:0,moods:{},notes:'',quotes:[],favPages:[],purchases:[],source:'',sourceUrl:'',reads:[],sessions:[],activity:[],createdAt:Date.now(),updatedAt:Date.now()};
+  for(const k in d)if(it[k]===undefined||it[k]===null)it[k]=d[k];
+  it.moods=Object.assign({spice:0,fluff:0,tears:0,humor:0},it.moods);
+  if(!it.reads.length)it.reads.push({id:uid(),start:'',finish:''});
+  return it;
+}
+
+/* ---------- domain logic ---------- */
+const byId=id=>state.items.find(i=>i.id===id);
+const seriesName=id=>(state.series.find(s=>s.id===id)||{}).name||'';
+const cur=it=>it.reads[it.reads.length-1];
+const spent=it=>it.purchases.reduce((a,p)=>a+(+p.price||0),0);
+const minutes=it=>it.sessions.reduce((a,s)=>a+(+s.minutes||0),0);
+const touch=it=>it.updatedAt=Date.now();
+const logDay=it=>{const t=today();if(!it.activity.includes(t))it.activity.push(t)};
+const tracked=it=>!['none','ongoing'].includes(it.progressMode)&&+it.total>0;
+function pct(it){if(it.status==='finished')return 100;if(!tracked(it))return null;return Math.min(100,Math.round((+it.progress||0)/it.total*100))}
+function progText(it){const m=it.progressMode;if(m==='none')return '';if(!tracked(it))return `${UNIT[m]} ${it.progress||0}${m==='ongoing'?' · ongoing':''}`;return `${UNIT[m]} ${it.progress||0} / ${it.total}`}
+function setStatus(it,st){
+  const r=cur(it);it.status=st;
+  if(st==='reading'&&!r.start)r.start=today();
+  if(st==='finished'){if(!r.start)r.start=today();if(!r.finish)r.finish=today();if(tracked(it))it.progress=+it.total}
+  touch(it);
+}
+function setProgress(it,v){
+  v=Math.max(0,Math.round(v*100)/100);it.progress=v;
+  if(it.status==='want'||it.status==='hold')setStatus(it,'reading');
+  if(tracked(it)&&v>=+it.total&&it.status!=='finished'){setStatus(it,'finished');toast('Finished! 🌿 Don\'t forget to rate it')}
+  logDay(it);touch(it);save();refresh();
+}
+function ensureSeries(name){
+  let s=state.series.find(x=>x.name.toLowerCase()===name.toLowerCase());
+  if(!s){s={id:uid(),name,planned:'',notes:''};state.series.push(s)}
+  return s;
+}
+
+/* ---------- small UI pieces ---------- */
+function coverHTML(it){
+  const src=safeImg(it.cover);
+  if(src)return `<img class="cv" src="${esc(src)}" alt="" loading="lazy">`;
+  const p=palOf(it);
+  return `<div class="cv typo" style="background:linear-gradient(155deg,${p[0]},${p[1]});color:${p[2]}">
+    <div class="typo-frame"></div>
+    <span class="tt">${esc(it.title||'Untitled')}</span>
+    <div class="typo-bot">
+      ${it.author?`<span class="ta">${esc(it.author)}</span>`:''}
+      <span class="tk">${esc(it.type||'')}</span>
+    </div>
+  </div>`;
+}
+const mini=it=>`<span class="thumb" title="${esc(it.title)}">${safeImg(it.cover)?`<img src="${esc(it.cover)}" alt="">`:`<i style="background:${grad(it)}"></i>`}</span>`;
+function stars(n,act,id){let h='<span class="stars">';for(let i=1;i<=5;i++)h+=act?`<button class="star ${i<=n?'on':''}" data-act="rate" data-id="${id}" data-v="${i}" title="${i} star${i>1?'s':''}">★</button>`:`<span class="star ${i<=n?'on':''}">★</span>`;return h+'</span>'}
+const sec=(t,c)=>`<div class="dsec"><h3>${t}</h3>${c}</div>`;
+const allVals=k=>[...new Set(state.items.flatMap(i=>i[k]))].sort((a,b)=>a.localeCompare(b));
+const typeList=()=>[...new Set([...state.settings.types,...state.items.map(i=>i.type)])];
+
+/* ---------- searchable dropdowns (genres / tags / stores / library books) ---------- */
+const COMBO={
+  genres:{multi:true,list:'genres',ph:'Tap to choose or type a genre…'},
+  tags:{multi:true,list:'tags',ph:'Tap to choose or type a tag…'},
+  store:{multi:false,list:'stores',ph:'Store (optional)'},
+  book:{multi:false,books:true,ph:'Search your library…'}
+};
+const cstate={};
+const comboEl=k=>document.querySelector(`.combo[data-combo="${k}"]`);
+function canon(list,v){v=String(v).trim();return (state.settings[list]||[]).find(x=>x.toLowerCase()===v.toLowerCase())||v}
+function chipsHTML(k){return cstate[k].vals.map(v=>`<span class="tchip">${esc(v)}<button type="button" data-act="cremove" data-k="${k}" data-v="${esc(v)}" aria-label="Remove">×</button></span>`).join('')}
+function comboHTML(k,init,id){
+  const c=COMBO[k];cstate[k]={vals:c.multi?[...(init||[])]:[],sel:''};
+  return `<div class="combo${c.multi?' multi':''}" data-combo="${k}"><div class="cbox in">${c.multi?`<span class="cchips">${chipsHTML(k)}</span>`:''}<input class="cin"${id?` id="${id}"`:''} value="${c.multi?'':esc(init||'')}" placeholder="${esc(c.ph)}" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done"></div><div class="dd hidden"></div></div>`;
+}
+function comboOpts(k){
+  const c=COMBO[k];
+  if(c.books)return state.items.map(it=>({v:it.id,label:it.title,search:[it.title,...it.altTitles,it.author].join(' '),html:`${mini(it)}<span style="min-width:0"><b>${esc(it.title)}</b><br><span class="muted small">${esc(it.author||it.type)} · ${ST_EMO[it.status]}</span></span>`}));
+  return state.settings[c.list].map(s=>({v:s,label:s,search:s}));
+}
+function score(text,q){
+  const l=String(text).toLowerCase();
+  if(!q)return 5;if(l===q)return 0;if(l.startsWith(q))return 1;
+  if(l.split(/[\s\-\/&,.()]+/).some(w=>w.startsWith(q)))return 2;if(l.includes(q))return 3;
+  let i=0;for(const ch of l)if(ch===q[i])i++;return i===q.length?4:-1;
+}
+function hl(label,q){const i=q?label.toLowerCase().indexOf(q):-1;if(i<0)return esc(label);return esc(label.slice(0,i))+'<mark>'+esc(label.slice(i,i+q.length))+'</mark>'+esc(label.slice(i+q.length))}
+function addComboVals(k,arr){
+  const c=COMBO[k],s=cstate[k];if(!s)return;
+  arr.forEach(v=>{v=canon(c.list,v);if(v&&!s.vals.some(x=>x.toLowerCase()===v.toLowerCase()))s.vals.push(v)});
+  const el=comboEl(k);if(el)el.querySelector('.cchips').innerHTML=chipsHTML(k);
+}
+function openDD(el){
+  const k=el.dataset.combo,c=COMBO[k],s=cstate[k],inp=el.querySelector('.cin'),dd=el.querySelector('.dd'),raw=inp.value.trim(),q=raw.toLowerCase();
+  const chosen=c.multi?s.vals.map(v=>v.toLowerCase()):[];
+  const opts=comboOpts(k).filter(o=>!chosen.includes(o.label.toLowerCase())).map(o=>({o,sc:score(o.search,q)})).filter(x=>x.sc>=0)
+    .sort((a,b)=>a.sc-b.sc||a.o.label.localeCompare(b.o.label)).slice(0,60).map(x=>x.o);
+  if(!c.books&&q&&!state.settings[c.list].some(x=>x.toLowerCase()===q)&&!chosen.includes(q))opts.push({v:raw,label:raw,create:true});
+  el._opts=opts;el._idx=q&&opts.length?0:-1;
+  dd.innerHTML=opts.length?opts.map((o,i)=>`<div class="opt${o.create?' new':''}${i===el._idx?' hi':''}" data-act="cpick" data-i="${i}">${o.create?`+ ${k==='store'?'New store':'Add'} “${esc(o.label)}”`:o.html||hl(o.label,q)}</div>`).join(''):`<div class="none">${c.books?'No books match':'No suggestions — everything is already added'}</div>`;
+  dd.classList.remove('hidden');
+}
+function hideDD(el){el.querySelector('.dd').classList.add('hidden');el._idx=-1}
+function moveHi(el,d){
+  const n=(el._opts||[]).length;if(!n)return;
+  el._idx=((el._idx??-1)+d+n)%n;
+  el.querySelectorAll('.opt').forEach((o,i)=>o.classList.toggle('hi',i===el._idx));
+  const h=el.querySelector('.opt.hi');if(h)h.scrollIntoView({block:'nearest'});
+}
+function pick(el,i){
+  const k=el.dataset.combo,c=COMBO[k],o=el._opts[i],inp=el.querySelector('.cin');if(!o)return;
+  if(c.multi){addComboVals(k,[o.v]);inp.value='';openDD(el);inp.focus()}
+  else if(c.books){inp.value=o.label;cstate[k].sel=o.v;hideDD(el)}
+  else{inp.value=o.v;hideDD(el)}
+}
+function comboKey(e){
+  const t=e.target,el=t.closest('.combo'),k=el.dataset.combo,c=COMBO[k],open=!el.querySelector('.dd').classList.contains('hidden');
+  if(e.key==='ArrowDown'){e.preventDefault();if(!open)openDD(el);moveHi(el,1)}
+  else if(e.key==='ArrowUp'){e.preventDefault();moveHi(el,-1)}
+  else if(e.key==='Enter'){e.preventDefault();if(open&&el._idx>=0)pick(el,el._idx);else if(c.multi&&t.value.trim()){addComboVals(k,[t.value]);t.value='';openDD(el)}else hideDD(el)}
+  else if(e.key===','&&c.multi){e.preventDefault();if(t.value.trim()){addComboVals(k,[t.value]);t.value='';openDD(el)}}
+  else if(e.key==='Backspace'&&c.multi&&!t.value&&cstate[k].vals.length){cstate[k].vals.pop();el.querySelector('.cchips').innerHTML=chipsHTML(k);openDD(el)}
+  else if(e.key==='Escape'){if(open){e.preventDefault();hideDD(el)}else if(!$('#modal').classList.contains('hidden'))closeModal()}
+}
+
+/* ---------- UI state & routing ---------- */
+const ui={view:'library',f:{q:'',type:'all',status:'all',genre:'',tag:'',coll:'',series:'',sort:'updated'},detailId:null,editId:null,modalKind:null,statsYear:new Date().getFullYear(),cal:null,calDay:null};
+let formCover='',formTheme='',lookupResults=[];
+function render(){
+  document.body.classList.toggle('dark',!!state.settings.dark);
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('on',b.dataset.v===ui.view));
+  document.querySelector('.tab[data-v=series]').style.display=state.settings.features.series?'':'none';
+  if(ui.view==='series'&&!state.settings.features.series)ui.view='library';
+  ({library:renderLibrary,series:renderSeries,stats:renderStats,calendar:renderCalendar,settings:renderSettings})[ui.view]();
+}
+function refresh(){render();if(ui.modalKind==='detail'&&ui.detailId)openDetail(ui.detailId,true)}
+function showModal(){$('#modal').classList.remove('hidden');document.body.style.overflow='hidden'}
+function closeModal(){$('#modal').classList.add('hidden');document.body.style.overflow='';ui.modalKind=null;ui.detailId=null}
+
+/* ---------- LIBRARY ---------- */
+function filtered(){
+  const f=ui.f,q=f.q.trim().toLowerCase();
+  const list=state.items.filter(it=>{
+    if(f.type!=='all'&&it.type!==f.type)return false;
+    if(f.status!=='all'&&it.status!==f.status)return false;
+    if(f.genre&&!it.genres.includes(f.genre))return false;
+    if(f.tag&&!it.tags.includes(f.tag))return false;
+    if(f.coll&&!it.collections.includes(f.coll))return false;
+    if(f.series&&it.seriesId!==f.series)return false;
+    if(q){
+      const hay=[it.title,...it.altTitles,it.author,...it.tags,...it.genres,...it.collections,seriesName(it.seriesId)].join(' ').toLowerCase();
+      if(!q.split(/\s+/).every(w=>hay.includes(w)))return false;
+    }
+    return true;
+  });
+  const S={
+    updated:(a,b)=>b.updatedAt-a.updatedAt,
+    added:(a,b)=>b.createdAt-a.createdAt,
+    title:(a,b)=>a.title.localeCompare(b.title),
+    author:(a,b)=>(a.author||'~').localeCompare(b.author||'~'),
+    rating:(a,b)=>b.rating-a.rating,
+    series:(a,b)=>(seriesName(a.seriesId)||'~').localeCompare(seriesName(b.seriesId)||'~')||(+a.seriesOrder||0)-(+b.seriesOrder||0)
+  };
+  return list.sort(S[f.sort]||S.updated);
+}
+function readingCard(it){
+  const p=pct(it),F=state.settings.features;
+  return `<div class="rcard" data-act="open" data-id="${it.id}">
+    <div class="rcv"><div class="cvwrap">${coverHTML(it)}</div></div>
+    <div class="rbody">
+      <div>
+        <div class="ct" style="margin-top:0">${esc(it.title)}</div>
+        <div class="muted small">${esc(progText(it)||it.type)}</div>
+      </div>
+      <div>
+        ${p!==null?`<div class="bar"><i style="width:${p}%"></i></div>`:''}
+        <div class="row" style="margin-bottom:0;margin-top:10px">
+          ${it.progressMode==='page'?`<button class="btn sm" data-act="open" data-id="${it.id}">Update page</button>`:it.progressMode!=='none'?`<button class="btn sm" data-act="prog" data-d="1" data-id="${it.id}">+1 ${UNIT[it.progressMode]}</button>`:''}
+          ${F.timer?`<button class="btn sm" data-act="tstart" data-id="${it.id}" title="Start timer">⏱️</button>`:''}
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+function card(it){
+  const p=pct(it);
+  return `<article class="card" data-act="open" data-id="${it.id}">
+    <div class="cvwrap">
+      ${coverHTML(it)}
+      <span class="badge" title="${STATUSES[it.status]}">${ST_EMO[it.status]}</span>
+      ${it.status==='want'&&it.owned?'<span class="owned">Owned</span>':''}
+    </div>
+    <div class="ct">${esc(it.title)}</div>
+    <div class="ca">${esc(it.author||it.type)}</div>
+    ${it.rating?stars(it.rating):''}
+    ${it.status==='reading'||it.status==='hold'?(p!==null?`<div class="bar"><i style="width:${p}%"></i></div>`:`<div class="ca">${esc(progText(it))}</div>`):''}
+  </article>`;
+}
+function calcStreak(){
+  const map=dayMap();let streak=0;const sd=new Date();
+  if(!map[iso(sd)])sd.setDate(sd.getDate()-1);
+  while(map[iso(sd)]){streak++;sd.setDate(sd.getDate()-1)}
+  return streak;
+}
+function renderLibrary(){
+  const its=state.items,f=ui.f,yr=new Date().getFullYear();
+  const hr=new Date().getHours(),greet=hr<12?'Good morning':hr<18?'Good afternoon':'Good evening';
+  const finYr=its.reduce((a,i)=>a+i.reads.filter(r=>r.finish&&r.finish.startsWith(yr)).length,0);
+  const reading=its.filter(i=>i.status==='reading');
+  const cnt=s=>its.filter(i=>s==='all'||i.status===s).length;
+  const opt=(k,label,vals)=>vals.length?`<select class="in auto" data-f="${k}"><option value="">${label}</option>${vals.map(v=>`<option value="${esc(v)}" ${f[k]===v?'selected':''}>${esc(v)}</option>`).join('')}</select>`:'';
+  const anyF=f.q||f.type!=='all'||f.status!=='all'||f.genre||f.tag||f.coll||f.series;
+  const streak=calcStreak();
+  let h=`<section class="hero">
+    <div>
+      <h1>${greet} ☕</h1>
+      <p class="muted" style="margin:0">Your personal corner for novels, manga, manhwa &amp; stories.</p>
+    </div>
+    <div class="hero-pills">
+      <span class="hpill">📖 Reading <b>${reading.length}</b></span>
+      <span class="hpill">🌿 Finished ${yr} <b>${finYr}</b></span>
+      ${streak?`<span class="hpill">🔥 Streak <b>${streak}d</b></span>`:''}
+    </div>
+  </section>`;
+  if(reading.length){
+    h+=`<div class="sec-head"><h2 class="sec">Currently Reading</h2><span class="muted small">${reading.length} in progress</span></div>
+    <div class="strip">${reading.map(readingCard).join('')}</div>`;
+  }
+  h+=`<div class="toolbar">
+    <input id="search" class="in search" type="search" placeholder="🔎 Search title, alt. title (e.g. Kimetsu), author, tag, genre, series…" value="${esc(f.q)}">
+    <select class="in auto" data-f="sort">${[['updated','Recently updated'],['added','Recently added'],['title','Title A–Z'],['author','Author'],['rating','Highest rated'],['series','Series order']].map(([k,l])=>`<option value="${k}" ${f.sort===k?'selected':''}>${l}</option>`).join('')}</select>
+    ${opt('genre','All genres',allVals('genres'))}
+    ${opt('tag','All tags',allVals('tags'))}
+    ${opt('coll','All collections',allVals('collections'))}
+    ${state.settings.features.series&&state.series.length?`<select class="in auto" data-f="series"><option value="">All series</option>${state.series.map(s=>`<option value="${s.id}" ${f.series===s.id?'selected':''}>${esc(s.name)}</option>`).join('')}</select>`:''}
+    ${anyF?'<button class="btn ghost" data-act="clearf">✕ Clear</button>':''}
+  </div>
+  <div class="chips">${['all',...typeList()].map(t=>`<button class="chip ${f.type===t?'on':''}" data-act="chip" data-k="type" data-v="${esc(t)}">${t==='all'?'All Types':esc(t)}</button>`).join('')}</div>
+  <div class="chips">${['all',...Object.keys(STATUSES)].map(s=>`<button class="chip ${f.status===s?'on':''}" data-act="chip" data-k="status" data-v="${s}">${s==='all'?'Everything':ST_EMO[s]+' '+(s==='want'?'Wishlist / Want to Read':STATUSES[s])} · ${cnt(s)}</button>`).join('')}</div>
+  <div id="count" class="muted small" style="margin-top:8px"></div>
+  <div id="grid" class="grid"></div>`;
+  $('#app').innerHTML=h;renderGrid();
+}
+function renderGrid(){
+  const g=$('#grid');if(!g)return;const list=filtered();
+  $('#count').textContent=`Showing ${list.length} of ${state.items.length} item${state.items.length===1?'':'s'}`;
+  if(!state.items.length){
+    g.outerHTML=`<div id="grid" class="empty">
+      <div class="big">📚</div>
+      <h2>Your reading shelf is ready</h2>
+      <p style="max-width:440px;margin:6px auto 18px">Track physical books, manga volumes, ongoing manhwa, web novels, and coverless AO3 fanfics all in one calm place.</p>
+      <div class="row wrap" style="justify-content:center">
+        <button class="btn primary" data-act="add">+ Add your first book</button>
+        <button class="btn" data-act="seed">✨ Load sample library</button>
+      </div>
+    </div>`;
+    return;
+  }
+  g.className='grid';
+  g.innerHTML=list.length?list.map(card).join(''):`<div class="empty" style="grid-column:1/-1">Nothing matches those filters — try another search 🍂</div>`;
+}
+
+/* ---------- DETAIL ---------- */
+function openDetail(id,keep){
+  const it=byId(id);if(!it)return closeModal();
+  ui.detailId=id;ui.modalKind='detail';const F=state.settings.features,box=$('#modalBox'),st=keep?box.scrollTop:0;
+  const ser=state.series.find(s=>s.id===it.seriesId),p=pct(it);
+  const chips=(arr,k)=>arr.map(v=>`<button class="chip sm" data-act="chip" data-k="${k}" data-v="${esc(v)}">${esc(v)}</button>`).join(' ');
+  let h=`<button class="x" data-act="close">✕</button>
+  <div class="dhead">
+    <div class="dcover"><div class="cvwrap">${coverHTML(it)}</div></div>
+    <div class="dinfo">
+      <span class="pill">${esc(it.type)}</span>${it.owned&&it.status==='want'?'<span class="pill sage">Owned</span>':''}
+      <h2 style="margin-top:6px">${esc(it.title)}</h2>
+      ${it.altTitles.length?`<div class="muted small">aka ${it.altTitles.map(esc).join(' · ')}</div>`:''}
+      ${it.author?`<div class="author">by ${esc(it.author)}</div>`:''}
+      ${F.series&&ser?`<div style="margin-top:4px"><button class="link" data-act="seriesview" data-id="${ser.id}">🗂️ ${esc(ser.name)}${it.seriesOrder?' #'+esc(it.seriesOrder):''}</button></div>`:''}
+      <div class="row wrap" style="margin-top:12px">
+        <select class="in auto" data-ch="status" data-id="${id}">${Object.entries(STATUSES).map(([k,v])=>`<option value="${k}" ${k===it.status?'selected':''}>${ST_EMO[k]} ${v}</option>`).join('')}</select>
+        ${stars(it.rating,true,id)}
+      </div>
+      ${it.progressMode!=='none'?`<div class="prog">
+        <button class="btn sm" data-act="prog" data-d="-1" data-id="${id}">−</button>
+        <span>${UNIT[it.progressMode]}</span>
+        <input class="in num" type="number" min="0" step="any" value="${it.progress||0}" data-ch="progset" data-id="${id}">
+        ${tracked(it)?`<span>/ ${it.total}</span>`:it.progressMode==='ongoing'?'<span class="muted small">ongoing</span>':''}
+        <button class="btn sm" data-act="prog" data-d="1" data-id="${id}">+1</button>
+      </div>
+      ${p!==null?`<div class="bar big"><i style="width:${p}%"></i></div><div class="muted small" style="margin-top:4px">${p}% complete</div>`:''}`:''}
+      <div class="row wrap" style="margin-top:14px">
+        <button class="btn sm" data-act="edit" data-id="${id}">✏️ Edit</button>
+        ${F.timer?`<button class="btn sm" data-act="tstart" data-id="${id}">⏱️ Start timer</button>`:''}
+        ${['finished','dropped'].includes(it.status)?`<button class="btn sm" data-act="reread" data-id="${id}">🔁 Start reread</button>`:''}
+        <button class="btn sm danger" data-act="del" data-id="${id}">🗑 Delete</button>
+      </div>
+    </div>
+  </div>`;
+  if(F.moods)h+=sec('Mood ratings',`<div class="moods">${MOODS.map(([k,e,l])=>`<div class="mood"><b class="small">${l}</b><span>${[1,2,3,4,5].map(i=>`<button class="mdot ${i<=it.moods[k]?'on':''}" data-act="mood" data-id="${id}" data-k="${k}" data-v="${i}">${e}</button>`).join('')}</span></div>`).join('')}</div>`);
+  if(it.genres.length||it.tags.length||it.collections.length)h+=sec('Genres, tags & collections',`${it.genres.length?`<div class="row wrap"><b class="small">Genres</b> ${chips(it.genres,'genre')}</div>`:''}${it.tags.length?`<div class="row wrap"><b class="small">Tags</b> ${chips(it.tags,'tag')}</div>`:''}${it.collections.length?`<div class="row wrap"><b class="small">Collections</b> ${chips(it.collections,'coll')}</div>`:''}`);
+  if(F.source&&(it.source||it.sourceUrl))h+=sec('Read online',`${esc(it.source||'Link')} ${safeUrl(it.sourceUrl)?`· <a class="link" href="${esc(it.sourceUrl)}" target="_blank" rel="noopener">Open original work ↗</a>`:''}`);
+  if(F.description&&it.description)h+=sec('Description',`<div style="white-space:pre-wrap">${esc(it.description)}</div>`);
+  h+=sec('Reading history',it.reads.map((r,i)=>`<div class="lrow"><b>${i===0?'First read':'Reread #'+i}</b><label>Start <input type="date" class="in auto" value="${r.start||''}" data-ch="readdate" data-k="start" data-id="${id}" data-rid="${r.id}"></label><label>Finish <input type="date" class="in auto" value="${r.finish||''}" data-ch="readdate" data-k="finish" data-id="${id}" data-rid="${r.id}"></label>${it.reads.length>1?`<button class="btn sm ghost" data-act="delread" data-id="${id}" data-rid="${r.id}">✕</button>`:''}</div>`).join(''));
+  if(F.timer){
+    const ss=[...it.sessions].sort((a,b)=>b.date.localeCompare(a.date));
+    h+=sec(`Reading time · ${fmtMin(minutes(it))}`,`${ss.map(s=>`<div class="lrow"><span>${fmtDate(s.date)}</span><b>${fmtMin(s.minutes)}</b><span style="flex:1"></span><button class="btn sm ghost" data-act="delsub" data-list="sessions" data-id="${id}" data-sid="${s.id}">✕</button></div>`).join('')||'<p class="muted small">No sessions yet — use the timer or log reading minutes manually.</p>'}
+    <div class="addrow"><input type="date" id="s-date" class="in" value="${today()}"><input type="number" id="s-min" class="in" min="1" placeholder="Minutes"><button class="btn sm" data-act="addsess" data-id="${id}">+ Log time</button></div>`);
+  }
+  if(F.notes)h+=sec('Notes',`<textarea class="in" rows="4" placeholder="Your personal thoughts, theories, feelings…" data-ch="notes" data-id="${id}">${esc(it.notes)}</textarea>`);
+  if(F.quotes)h+=sec(`Quotes · ${it.quotes.length}`,`${it.quotes.map(q=>`<div class="lrow"><blockquote>${esc(q.text)}${q.page?`<div class="muted small" style="font-family:var(--font-sans);margin-top:4px">— ${esc(q.page)}</div>`:''}</blockquote><button class="btn sm ghost" data-act="delsub" data-list="quotes" data-id="${id}" data-sid="${q.id}">✕</button></div>`).join('')}
+    <div class="addrow"><textarea id="q-text" class="in" rows="2" placeholder="A quote or line to remember…"></textarea><input id="q-page" class="in" style="max-width:135px" placeholder="Page / ch."><button class="btn sm" data-act="addquote" data-id="${id}">+ Add quote</button></div>`);
+  if(F.favPages)h+=sec(`Favorite pages & chapters · ${it.favPages.length}`,`${it.favPages.map(f=>`<div class="lrow"><b>📌 ${esc(f.page)}</b><span style="flex:1">${esc(f.note)}</span><button class="btn sm ghost" data-act="delsub" data-list="favPages" data-id="${id}" data-sid="${f.id}">✕</button></div>`).join('')}
+    <div class="addrow"><input id="f-page" class="in" style="max-width:145px" placeholder="e.g. p. 183 or Ch. 12"><input id="f-note" class="in" placeholder="Why this moment stands out"><button class="btn sm" data-act="addfav" data-id="${id}">+ Add</button></div>`);
+  if(F.spending)h+=sec(`Spending · ${money(spent(it))}`,`${it.purchases.map(b=>`<div class="lrow"><b>${esc(b.label||'Purchase')}</b><span>${money(b.price)}</span><span class="muted small">${b.date?fmtDate(b.date):''} ${b.store?'· '+esc(b.store):''}</span><span style="flex:1"></span><button class="btn sm ghost" data-act="delsub" data-list="purchases" data-id="${id}" data-sid="${b.id}">✕</button></div>`).join('')||'<p class="muted small">No purchases recorded yet.</p>'}
+    <div class="addrow"><input id="b-label" class="in" placeholder="e.g. Box set, Vol. 1, coins"><input id="b-price" type="number" min="0" step="any" class="in" style="max-width:110px" placeholder="Price"><input id="b-date" type="date" class="in" style="max-width:165px" value="${today()}">${comboHTML('store','','b-store')}<button class="btn sm" data-act="addbuy" data-id="${id}">+ Add</button></div>`);
+  box.innerHTML=h;showModal();box.scrollTop=st;
+}
+
+/* ---------- ADD / EDIT FORM ---------- */
+function openForm(id){
+  const it=id?byId(id):normItem({title:''});
+  ui.editId=id;ui.modalKind='form';formCover=it.cover||'';formTheme=it.coverTheme??'';lookupResults=[];
+  const r=cur(it),F=state.settings.features,ser=state.series.find(s=>s.id===it.seriesId);
+  const opts=(o,v)=>o.map(([k,l])=>`<option value="${esc(k)}" ${k===v?'selected':''}>${esc(l)}</option>`).join('');
+  const fld=(label,ctrl,cls='')=>`<label class="fld ${cls}"><span class="fl">${label}</span>${ctrl}</label>`;
+  $('#modalBox').innerHTML=`<button class="x" data-act="close">✕</button>
+  <h2>${id?'Edit reading item':'Add to your shelf'}</h2>
+  <form id="itemForm" class="form" autocomplete="off">
+    <div class="lookup">
+      <span class="fl" style="margin-bottom:8px">✨ Fill in details automatically</span>
+      <div class="row wrap">
+        <input class="in" id="lk-q" style="flex:1;min-width:180px" placeholder="Search by title or ISBN…" value="${id?esc(it.title):''}" enterkeyhint="search">
+        <select class="in auto" id="lk-src"><option value="all">All sources</option><option value="books">Books</option><option value="comics">Manga · Manhwa · Manhua</option></select>
+        <button type="button" class="btn primary" data-act="lookup">Search</button>
+      </div>
+      <div id="lk-res" class="results"></div>
+    </div>
+    <div class="full fcover">
+      <div id="coverPrev" class="dcover" style="width:108px"></div>
+      <div class="col">
+        <span class="fl">Cover</span>
+        <div class="row wrap" style="margin:0">
+          <label class="btn sm" style="color:inherit">📷 Upload image<input type="file" id="coverFile" accept="image/*" hidden></label>
+          <button type="button" class="btn sm ghost" data-act="coverclear">Use typography card</button>
+        </div>
+        <input class="in" id="coverUrl" placeholder="…or paste an image URL" value="${formCover.startsWith('data:')?'':esc(formCover)}">
+        <div class="swatches">
+          <span class="muted small">Card tone:</span>
+          <button type="button" class="chip sm ${formTheme===''?'on':''}" data-act="theme" data-v="">Auto</button>
+          ${EARTH_PALS.map((p,idx)=>`<button type="button" class="swatch ${String(formTheme)===String(idx)?'on':''}" data-act="theme" data-v="${idx}" title="${p[3]}" style="background:linear-gradient(135deg,${p[0]},${p[1]})"></button>`).join('')}
+        </div>
+        <span class="muted small">No cover (e.g. AO3 fics)? Customize the earth-tone typography card above.</span>
+      </div>
+    </div>
+    ${fld('Title *',`<input class="in" name="title" required value="${esc(it.title)}">`,'full')}
+    ${fld('Alternative titles <small>· one per line</small>',`<textarea class="in" name="alt" rows="2" placeholder="Other languages, romanized names…">${esc(it.altTitles.join('\n'))}</textarea>`,'full')}
+    ${fld('Author',`<input class="in" name="author" list="dl-author" value="${esc(it.author)}">`)}
+    ${fld('Type',`<select class="in" name="type">${opts(typeList().map(t=>[t,t]),it.type)}</select>`)}
+    ${fld('Status',`<select class="in" name="status">${opts(Object.entries(STATUSES),it.status)}</select>`)}
+    <div class="fld"><span class="fl">Ownership</span><label class="tbox"><input type="checkbox" name="owned" ${it.owned?'checked':''}> I own it (not read yet)</label></div>
+    <div class="fld"><span class="fl">Genres</span>${comboHTML('genres',it.genres)}</div>
+    <div class="fld"><span class="fl">Tags</span>${comboHTML('tags',it.tags)}</div>
+    ${fld('Custom collections <small>· comma-separated</small>',`<input class="in" name="colls" value="${esc(it.collections.join(', '))}" placeholder="Comfort reads, 2025 favourites">`,'full')}
+    ${F.series?fld('Series',`<input class="in" name="series" list="dl-series" value="${esc(ser?ser.name:'')}" placeholder="Type a new name to create">`)+fld('Number in series',`<input class="in" name="sorder" type="number" step="any" min="0" value="${esc(it.seriesOrder)}" placeholder="e.g. 1">`):''}
+    <div class="trio">${fld('Progress tracking',`<select class="in" name="pmode">${opts(Object.entries(PMODES),it.progressMode)}</select>`)}${fld('Current',`<input class="in" name="prog" type="number" step="any" min="0" value="${it.progress||0}">`)}${fld('Total',`<input class="in" name="total" type="number" step="any" min="0" value="${esc(it.total)}" placeholder="Optional">`)}</div>
+    ${fld('Start date',`<input class="in" type="date" name="start" value="${r.start||''}">`)}
+    ${fld('Finish date',`<input class="in" type="date" name="finish" value="${r.finish||''}">`)}
+    ${F.source?fld('Source',`<input class="in" name="source" list="dl-source" value="${esc(it.source)}" placeholder="AO3, Webtoon…">`)+fld('Source URL',`<input class="in" name="url" type="url" value="${esc(it.sourceUrl)}" placeholder="https://">`):''}
+    ${F.description?fld('Description',`<textarea class="in" name="desc" rows="4">${esc(it.description)}</textarea>`,'full'):''}
+    <div class="full row" style="justify-content:flex-end;margin-top:6px">
+      <button type="button" class="btn" data-act="close">Cancel</button>
+      <button class="btn primary" type="submit">${id?'Save changes':'Add to shelf ✨'}</button>
+    </div>
+  </form>
+  <datalist id="dl-author">${[...new Set(state.items.map(i=>i.author).filter(Boolean))].map(a=>`<option value="${esc(a)}">`).join('')}</datalist>
+  <datalist id="dl-series">${state.series.map(s=>`<option value="${esc(s.name)}">`).join('')}</datalist>
+  <datalist id="dl-source">${[...new Set(['AO3','Webtoon','Tapas','Wattpad','Royal Road',...state.items.map(i=>i.source).filter(Boolean)])].map(a=>`<option value="${esc(a)}">`).join('')}</datalist>`;
+  showModal();$('#modalBox').scrollTop=0;updateCoverPreview();
+}
+function updateCoverPreview(){
+  const p=$('#coverPrev');if(!p)return;
+  const v=n=>($(`#itemForm [name=${n}]`)||{}).value||'';
+  p.innerHTML=`<div class="cvwrap">${coverHTML({cover:formCover,coverTheme:formTheme,title:v('title')||'Your Title',author:v('author'),type:v('type')})}</div>`;
+}
+function fileToCover(file){
+  return new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=()=>{
+      const img=new Image();
+      img.onload=()=>{
+        const s=Math.min(1,600/Math.max(img.width,img.height));
+        const c=document.createElement('canvas');c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        res(c.toDataURL('image/jpeg',.82));
+      };
+      img.onerror=rej;img.src=r.result;
+    };
+    r.onerror=rej;r.readAsDataURL(file);
+  });
+}
+function saveForm(e){
+  e.preventDefault();
+  const f=e.target.elements,el=n=>f.namedItem(n),val=n=>el(n)?el(n).value:'';
+  const title=val('title').trim();if(!title)return toast('Title is required');
+  ['genres','tags'].forEach(k=>{const c=comboEl(k),v=c&&c.querySelector('.cin').value;if(v&&v.trim())addComboVals(k,csv(v))});
+  const isNew=!ui.editId,it=isNew?normItem({}):byId(ui.editId),prev=it.status;
+  Object.assign(it,{
+    title,altTitles:lines(val('alt')),author:val('author').trim(),type:val('type'),
+    owned:el('owned').checked,cover:formCover,coverTheme:formTheme,
+    genres:[...cstate.genres.vals],tags:[...cstate.tags.vals],collections:csv(val('colls')),
+    progressMode:val('pmode'),progress:+val('prog')||0,total:val('total')===''?'':+val('total')
+  });
+  addToList('genres',it.genres);addToList('tags',it.tags);
+  if(el('desc'))it.description=val('desc').trim();
+  if(el('source')){it.source=val('source').trim();it.sourceUrl=val('url').trim()}
+  if(el('series')){const sn=val('series').trim();it.seriesId=sn?ensureSeries(sn).id:'';it.seriesOrder=val('sorder')}
+  const r=cur(it);r.start=val('start');r.finish=val('finish');
+  if(isNew||val('status')!==prev)setStatus(it,val('status'));else touch(it);
+  if(isNew)state.items.push(it);
+  save();render();openDetail(it.id);toast(isNew?'Added to your shelf ✨':'Changes saved');
+}
+
+/* ---------- AUTO-FILL (Google Books → Open Library fallback, AniList) ---------- */
+async function getJSON(url,opt){const r=await fetch(url,opt);if(!r.ok)throw new Error(r.status);return r.json()}
+async function searchGoogle(q){
+  const d=await getJSON(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=10&printType=books`);
+  return (d.items||[]).map(x=>{
+    const v=x.volumeInfo||{};
+    const cats=[...new Set((v.categories||[]).flatMap(c=>c.split('/')).map(s=>s.trim()).filter(s=>s&&!/^(general|fiction)$/i.test(s)))];
+    const img=v.imageLinks?(v.imageLinks.thumbnail||v.imageLinks.smallThumbnail||''):'';
+    return {src:'Google Books',title:v.title||'Untitled',alt:[],author:(v.authors||[]).join(', '),desc:strip(v.description),cover:img.replace(/^http:/,'https:').replace('&edge=curl',''),
+      genres:cats,tags:[],year:(v.publishedDate||'').slice(0,4),pmode:'page',total:v.pageCount||'',type:cats.some(c=>/manga/i.test(c))?'Manga':null};
+  });
+}
+async function searchOL(q){
+  const d=await getJSON(`https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=10&fields=title,author_name,cover_i,number_of_pages_median,subject,first_publish_year`);
+  const G=state.settings.genres.map(g=>g.toLowerCase());
+  return (d.docs||[]).map(v=>({src:'Open Library',title:v.title||'Untitled',alt:[],author:(v.author_name||[]).slice(0,3).join(', '),desc:'',cover:v.cover_i?`https://covers.openlibrary.org/b/id/${v.cover_i}-L.jpg`:'',
+    genres:[...new Set((v.subject||[]).filter(s=>G.includes(s.toLowerCase())))].slice(0,5),tags:[],year:v.first_publish_year||'',pmode:'page',total:v.number_of_pages_median||'',type:null}));
+}
+const AL_Q=`query($s:String){Page(perPage:10){media(search:$s,type:MANGA,sort:SEARCH_MATCH){title{romaji english native}synonyms description coverImage{large}genres tags{name rank isMediaSpoiler}chapters volumes status format countryOfOrigin startDate{year}staff(perPage:4){edges{role node{name{full}}}}}}}`;
+async function searchAniList(q){
+  const d=await getJSON('https://graphql.anilist.co',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({query:AL_Q,variables:{s:q}})});
+  return ((d.data&&d.data.Page&&d.data.Page.media)||[]).map(m=>{
+    const t=m.title||{},main=t.english||t.romaji||t.native||'Untitled';
+    const alt=[...new Set([t.romaji,t.english,t.native,...(m.synonyms||[])].filter(x=>x&&x!==main))];
+    const edges=(m.staff&&m.staff.edges)||[],story=edges.filter(e=>/story|original/i.test(e.role)).map(e=>e.node.name.full);
+    const authors=[...new Set(story.length?story:edges.map(e=>e.node.name.full))].slice(0,2);
+    const type=m.format==='NOVEL'?'Light novel':({KR:'Manhwa',CN:'Manhua',TW:'Manhua'}[m.countryOfOrigin]||'Manga');
+    const ongoing=m.status==='RELEASING'||m.status==='HIATUS';
+    const pmode=m.chapters?'chapter':m.volumes?'volume':ongoing?'ongoing':'chapter';
+    return {src:'AniList',title:main,alt,author:authors.join(', '),desc:strip(m.description),cover:(m.coverImage&&m.coverImage.large)||'',
+      genres:m.genres||[],tags:(m.tags||[]).filter(x=>!x.isMediaSpoiler&&x.rank>=70).slice(0,5).map(x=>x.name),year:(m.startDate&&m.startDate.year)||'',pmode,total:m.chapters||m.volumes||'',type,ongoing};
+  });
+}
+async function doLookup(){
+  const qi=$('#lk-q'),box=$('#lk-res');if(!qi||!box)return;
+  const q=(qi.value||($('#itemForm [name=title]')||{}).value||'').trim();if(!q)return toast('Type a title to search');qi.value=q;
+  const src=$('#lk-src').value,isbn=/^[\d\-\s]{10,17}$/.test(q)?q.replace(/\D/g,''):'';
+  if(!navigator.onLine){box.innerHTML='<p class="muted small">📴 You\'re offline — auto-fill needs internet. You can still type everything in manually.</p>';return}
+  box.innerHTML='<p class="muted small">Searching book &amp; manga databases…</p>';
+  const books=async()=>{try{const r=await searchGoogle(isbn?'isbn:'+isbn:q);if(r.length)return r}catch(e){}return searchOL(isbn||q)};
+  const jobs=[];if(src!=='comics')jobs.push(books());if(src!=='books'&&!isbn)jobs.push(searchAniList(q));
+  const res=await Promise.allSettled(jobs);if(!$('#lk-res'))return;
+  const ok=res.filter(r=>r.status==='fulfilled').map(r=>r.value);
+  if(['Manga','Manhwa','Manhua'].includes(($('#itemForm [name=type]')||{}).value))ok.reverse();
+  lookupResults=ok.flat();
+  if(!ok.length){box.innerHTML='<p class="muted small">⚠️ Couldn\'t reach the book databases. Check your connection and try again.</p>';return}
+  if(!lookupResults.length){box.innerHTML='<p class="muted small">No matches found. Try another spelling, the original title, or the ISBN.</p>';return}
+  const unit=r=>r.pmode==='page'?'pages':r.pmode==='volume'?'vols':'ch.';
+  box.innerHTML=lookupResults.map((r,i)=>`<div class="res" data-act="pickres" data-i="${i}">${safeImg(r.cover)?`<img src="${esc(r.cover)}" alt="" loading="lazy">`:'<span class="ph"></span>'}<div style="min-width:0"><b>${esc(r.title)}</b><div class="muted small">${esc(r.author||'Unknown author')}${r.year?' · '+r.year:''}${r.total?` · ${r.total} ${unit(r)}`:r.ongoing?' · ongoing':''}</div><span class="src">${r.src}</span> ${r.type?`<span class="src">${esc(r.type)}</span>`:''}</div></div>`).join('');
+}
+function applyResult(r){
+  if(!r)return;
+  const f=$('#itemForm').elements,el=n=>f.namedItem(n),set=(n,v)=>{if(el(n)&&v!==undefined&&v!==null&&v!=='')el(n).value=v};
+  set('title',r.title);set('author',r.author);
+  if(r.alt.length)el('alt').value=[...new Set([...lines(el('alt').value),...r.alt])].join('\n');
+  if(r.type){const tl=typeList(),t=tl.find(x=>x.toLowerCase()===r.type.toLowerCase())||(r.type==='Light novel'?'Novel':'');if(t)el('type').value=t}
+  set('pmode',r.pmode);el('total').value=r.total||'';
+  if(el('desc')&&r.desc)el('desc').value=r.desc;
+  addComboVals('genres',r.genres);addComboVals('tags',r.tags);
+  if(safeImg(r.cover)){formCover=r.cover;$('#coverUrl').value=r.cover;inlineCover(r.cover)}
+  updateCoverPreview();$('#lk-res').innerHTML='';toast('Details filled in ✨ Check them, then save');
+}
+async function inlineCover(url){
+  try{
+    const r=await fetch(url,{mode:'cors'});if(!r.ok)return;
+    const data=await fileToCover(await r.blob());
+    if(formCover===url&&$('#coverPrev')){formCover=data;updateCoverPreview()}
+  }catch(e){/* keep URL */}
+}
+
+/* ---------- SERIES ---------- */
+function renderSeries(){
+  let h=`<section class="hero">
+    <div><h1>Series 🗂️</h1><p class="muted" style="margin:0">Each book keeps its own status, rating &amp; notes — while the series tracks the big picture.</p></div>
+    <button class="btn primary" data-act="editseries">+ New series</button>
+  </section>`;
+  if(!state.series.length)h+=`<div class="empty"><div class="big">🗂️</div><p>No series yet. Create one here, or type a series name when adding a book.</p></div>`;
+  h+=state.series.map(s=>{
+    const its=state.items.filter(i=>i.seriesId===s.id).sort((a,b)=>(+a.seriesOrder||999)-(+b.seriesOrder||999));
+    const n=its.length,denom=Math.max(+s.planned||0,n)||1,fin=its.filter(i=>i.status==='finished').length;
+    const comp=Math.round(fin/denom*100),overall=Math.round(its.reduce((a,i)=>a+(pct(i)||0),0)/denom);
+    const rated=its.filter(i=>i.rating),avg=rated.length?(rated.reduce((a,i)=>a+i.rating,0)/rated.length).toFixed(1):'–';
+    return `<div class="scard">
+      <div class="row wrap" style="justify-content:space-between;margin:0">
+        <div>
+          <h2 style="margin:0">${esc(s.name)}</h2>
+          <div class="muted small">${n} item${n===1?'':'s'}${+s.planned?` of ${s.planned} planned`:''} · ${fin} finished · ⭐ ${avg}${state.settings.features.spending?` · ${money(its.reduce((a,i)=>a+spent(i),0))} spent`:''}</div>
+        </div>
+        <div class="row">
+          <button class="btn sm" data-act="seriesview" data-id="${s.id}">View in library</button>
+          <button class="btn sm" data-act="editseries" data-id="${s.id}">✏️</button>
+          <button class="btn sm danger" data-act="delseries" data-id="${s.id}">🗑</button>
+        </div>
+      </div>
+      <div class="cols2" style="margin-top:10px">
+        <div class="small"><b>Completion</b> ${comp}%<div class="bar big"><i style="width:${comp}%"></i></div></div>
+        <div class="small"><b>Overall progress</b> ${overall}%<div class="bar big"><i style="width:${overall}%"></i></div></div>
+      </div>
+      ${s.notes?`<p class="small muted" style="margin-bottom:0">${esc(s.notes)}</p>`:''}
+      <div class="sthumbs">${its.map(i=>`<div class="sitem" data-act="open" data-id="${i.id}"><div class="cvwrap">${coverHTML(i)}</div><div style="margin-top:4px">${i.seriesOrder?'#'+esc(i.seriesOrder)+' ':''}${ST_EMO[i.status]}</div></div>`).join('')}</div>
+    </div>`;
+  }).join('');
+  $('#app').innerHTML=h;
+}
+function openSeriesForm(id){
+  const s=state.series.find(x=>x.id===id)||{name:'',planned:'',notes:''};ui.modalKind='series';ui.editSeries=id||null;
+  $('#modalBox').innerHTML=`<button class="x" data-act="close">✕</button><h2>${id?'Edit series':'New series'}</h2>
+  <form id="seriesForm" class="form">
+    <label class="fld full"><span class="fl">Name *</span><input class="in" name="name" required value="${esc(s.name)}"></label>
+    <label class="fld"><span class="fl">Total items in series</span><input class="in" type="number" min="0" name="planned" value="${esc(s.planned)}" placeholder="Optional"></label>
+    <label class="fld full"><span class="fl">Notes</span><textarea class="in" name="notes">${esc(s.notes)}</textarea></label>
+    <div class="full row" style="justify-content:flex-end"><button type="button" class="btn" data-act="close">Cancel</button><button class="btn primary">Save</button></div>
+  </form>`;
+  showModal();
+}
+function saveSeries(e){
+  e.preventDefault();const f=e.target.elements,name=f.namedItem('name').value.trim();if(!name)return;
+  let s=state.series.find(x=>x.id===ui.editSeries);if(!s){s={id:uid()};state.series.push(s)}
+  Object.assign(s,{name,planned:f.namedItem('planned').value,notes:f.namedItem('notes').value.trim()});save();closeModal();render();toast('Series saved');
+}
+
+/* ---------- STATS ---------- */
+function vchart(labels,vals,fmt=v=>v){
+  const max=Math.max(1,...vals);
+  return `<div class="vchart">${vals.map((v,i)=>`<div class="vcol"><span class="vval">${v?fmt(v):''}</span><div class="vbar" style="height:${v/max*100}%"></div><span class="vlab">${labels[i]}</span></div>`).join('')}</div>`;
+}
+function hbars(rows){
+  if(!rows.length)return '<p class="muted small">No data yet.</p>';
+  const max=Math.max(1,...rows.map(r=>r[1]));
+  return rows.map(([l,v,x])=>`<div class="hrow"><span class="lab" title="${esc(l)}">${esc(l)}</span><div class="htrack"><div class="hfill" style="width:${v/max*100}%"></div></div><b>${x??v}</b></div>`).join('');
+}
+function renderStats(){
+  const y=String(ui.statsYear),items=state.items,F=state.settings.features;
+  const fins=[],sess=[];
+  items.forEach(it=>{
+    it.reads.forEach(r=>r.finish&&fins.push({it,d:r.finish}));
+    it.sessions.forEach(s=>sess.push({it,d:s.date,m:+s.minutes||0}));
+  });
+  const years=[...new Set([new Date().getFullYear(),+y,...fins.map(f=>+f.d.slice(0,4)),...sess.map(s=>+s.d.slice(0,4))])].filter(Boolean).sort((a,b)=>b-a);
+  const months=Array(12).fill(0),tmon=Array(12).fill(0);
+  fins.filter(f=>f.d.startsWith(y)).forEach(f=>months[+f.d.slice(5,7)-1]++);
+  sess.filter(s=>s.d.startsWith(y)).forEach(s=>tmon[+s.d.slice(5,7)-1]+=s.m);
+  const rated=items.filter(i=>i.rating>0),avg=rated.length?(rated.reduce((a,i)=>a+i.rating,0)/rated.length).toFixed(2):'–';
+  const sumP=modes=>items.filter(i=>modes.includes(i.progressMode)).reduce((a,i)=>a+(+i.progress||0),0);
+  const spentAll=items.reduce((a,i)=>a+spent(i),0),spentY=items.reduce((a,i)=>a+i.purchases.filter(p=>(p.date||'').startsWith(y)).reduce((s,p)=>s+(+p.price||0),0),0);
+  const mlab=['J','F','M','A','M','J','J','A','S','O','N','D'];
+  const byType=typeList().map(t=>{const all=items.filter(i=>i.type===t),fn=all.filter(i=>i.status==='finished').length;return [t,fn,`${fn}/${all.length}`,all.length]}).filter(r=>r[3]);
+  const gc={};let gTotal=0;
+  items.forEach(i=>i.genres.forEach(g=>{gc[g]=(gc[g]||0)+1;gTotal++}));
+  const genres=Object.entries(gc).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([g,c])=>[g,c,`${c} (${Math.round(c/Math.max(1,gTotal)*100)}%)`]);
+  const stat=Object.keys(STATUSES).map(s=>[ST_EMO[s]+' '+STATUSES[s],items.filter(i=>i.status===s).length]);
+  const rdist=[5,4,3,2,1].map(n=>['★'.repeat(n),items.filter(i=>i.rating===n).length]);
+  $('#app').innerHTML=`<section class="hero">
+    <div><h1>Reading Statistics 📊</h1><p class="muted" style="margin:0">Your reading habits, genres, and spending at a glance.</p></div>
+    <select class="in auto" data-ch="year">${years.map(v=>`<option ${String(v)===y?'selected':''}>${v}</option>`).join('')}</select>
+  </section>
+  <div class="kpis">
+    <div class="kpi"><span>Finished in ${y}</span><b>${months.reduce((a,b)=>a+b,0)}</b></div>
+    <div class="kpi"><span>Finished all-time</span><b>${fins.length}</b></div>
+    <div class="kpi"><span>Currently reading</span><b>${items.filter(i=>i.status==='reading').length}</b></div>
+    <div class="kpi"><span>Wishlist</span><b>${items.filter(i=>i.status==='want').length}</b></div>
+    <div class="kpi"><span>Pages read</span><b>${sumP(['page']).toLocaleString()}</b></div>
+    <div class="kpi"><span>Chapters read</span><b>${sumP(['chapter','ongoing']).toLocaleString()}</b></div>
+    <div class="kpi"><span>Average rating</span><b>⭐ ${avg}</b></div>
+    ${F.timer?`<div class="kpi"><span>Reading time (${y})</span><b>${fmtMin(tmon.reduce((a,b)=>a+b,0))}</b><span>${fmtMin(sess.reduce((a,s)=>a+s.m,0))} all-time</span></div>`:''}
+    ${F.spending?`<div class="kpi"><span>Total spent</span><b>${money(spentAll)}</b><span>${money(spentY)} in ${y}</span></div>`:''}
+  </div>
+  <div class="cols2">
+    <div class="panel"><h3>Finished per month · ${y}</h3>${vchart(mlab,months)}</div>
+    ${F.timer?`<div class="panel"><h3>Reading time per month · ${y}</h3>${vchart(mlab,tmon,fmtMin)}</div>`:''}
+    <div class="panel"><h3>By type (finished / total)</h3>${hbars(byType)}</div>
+    <div class="panel"><h3>Top genres</h3>${hbars(genres)}</div>
+    <div class="panel"><h3>By status</h3>${hbars(stat)}</div>
+    <div class="panel"><h3>Ratings breakdown</h3>${hbars(rdist)}</div>
+  </div>`;
+}
+
+/* ---------- CALENDAR ---------- */
+function dayMap(){
+  const m={};
+  const add=(d,it,min,fin)=>{
+    if(!d)return;
+    const day=m[d]||(m[d]={items:new Map(),min:0});
+    const e=day.items.get(it.id)||{it,min:0,fin:false};
+    e.min+=min||0;if(fin)e.fin=true;
+    day.items.set(it.id,e);day.min+=min||0;
+  };
+  state.items.forEach(it=>{
+    it.sessions.forEach(s=>add(s.date,it,+s.minutes));
+    it.activity.forEach(d=>add(d,it,0));
+    it.reads.forEach(r=>r.finish&&add(r.finish,it,0,true));
+  });
+  return m;
+}
+function renderCalendar(){
+  const now=new Date();if(!ui.cal)ui.cal={y:now.getFullYear(),m:now.getMonth()};if(!ui.calDay)ui.calDay=today();
+  const {y,m}=ui.cal,map=dayMap(),offset=(new Date(y,m,1).getDay()+6)%7,dim=new Date(y,m+1,0).getDate(),weeks=Math.ceil((offset+dim)/7);
+  let cells='';
+  for(let i=0;i<weeks*7;i++){
+    const d=new Date(y,m,1-offset+i),ds=iso(d),e=map[ds],its=e?[...e.items.values()]:[];
+    cells+=`<div class="cday ${d.getMonth()!==m?'out':''} ${ds===today()?'today':''} ${ds===ui.calDay?'sel':''} ${its.length?'has':''}" data-act="calday" data-d="${ds}">
+      <div class="dn">${d.getDate()}</div>
+      <div class="thumbs">${its.slice(0,4).map(x=>mini(x.it)).join('')}${its.length>4?`<span class="more">+${its.length-4}</span>`:''}</div>
+      ${e&&e.min?`<div class="cmin">${fmtMin(e.min)}</div>`:''}
+    </div>`;
+  }
+  const pre=`${y}-${pad(m+1)}`,mdays=Object.keys(map).filter(k=>k.startsWith(pre));
+  const mmin=mdays.reduce((a,k)=>a+map[k].min,0),mfin=mdays.reduce((a,k)=>a+[...map[k].items.values()].filter(x=>x.fin).length,0);
+  const streak=calcStreak();
+  const ds=ui.calDay,de=map[ds],ents=de?[...de.items.values()]:[];
+  const det=`<div class="panel" id="dayPanel"><h3>📖 ${fmtDate(ds)}${ds===today()?' · Today':''}</h3>
+    ${ents.length?ents.map(x=>`<div class="lrow">${mini(x.it)}<button class="link" data-act="open" data-id="${x.it.id}">${esc(x.it.title)}</button>${x.min?`<span class="muted">${fmtMin(x.min)}</span>`:''}${x.fin?'<span>🌿 finished</span>':''}<span style="flex:1"></span><button class="btn sm ghost" data-act="calrm" data-id="${x.it.id}" title="Remove from this day">✕</button></div>`).join(''):'<p class="muted small">Nothing logged on this day yet.</p>'}
+    ${state.items.length?`<span class="fl" style="margin-top:14px">Add a book from your library</span><div class="addrow">${comboHTML('book')}<input id="cal-min" type="number" min="1" class="in" style="max-width:170px" placeholder="Minutes (optional)"><label class="tbox"><input type="checkbox" id="cal-fin"> Finished it</label><button class="btn primary" data-act="caladd">+ Add</button></div>`:'<p class="muted small">Add books to your library first.</p>'}
+  </div>`;
+  $('#app').innerHTML=`<section class="hero">
+    <div><h1>Reading Calendar 📅</h1><p class="muted" style="margin:0">🔥 ${streak}-day reading streak</p></div>
+  </section>
+  <div class="kpis">
+    <div class="kpi"><span>Reading days this month</span><b>${mdays.length}</b></div>
+    <div class="kpi"><span>Time this month</span><b>${fmtMin(mmin)}</b></div>
+    <div class="kpi"><span>Finished this month</span><b>${mfin}</b></div>
+  </div>
+  <div class="calhead">
+    <button class="btn sm" data-act="calmove" data-d="-1">‹</button>
+    <h2 style="margin:0;min-width:190px;text-align:center">${new Date(y,m,1).toLocaleDateString(undefined,{month:'long',year:'numeric'})}</h2>
+    <button class="btn sm" data-act="calmove" data-d="1">›</button>
+    <button class="btn sm ghost" data-act="calmove" data-d="0">Today</button>
+  </div>
+  <div class="cal">${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map(d=>`<div class="cdow">${d}</div>`).join('')}${cells}</div>
+  ${det}
+  <p class="muted small" style="margin-top:12px">Tap a day to add books from your library. Days also fill in automatically when you use the timer, log time, update progress, or finish a book.</p>`;
+}
+
+/* ---------- SETTINGS ---------- */
+function listPanel(k,title,hint){
+  const L=state.settings[k];
+  return `<div class="panel"><h3>${title} · ${L.length}</h3><p class="muted small">${hint}</p>
+    <div class="chips">${L.map(v=>`<span class="tchip">${esc(v)}<button type="button" data-act="listdel" data-k="${k}" data-v="${esc(v)}" title="Remove">×</button></span>`).join('')||'<span class="muted small">Empty</span>'}</div>
+    <div class="addrow"><input class="in" id="la-${k}" data-la="${k}" placeholder="Add new… (use commas to add several)"><button class="btn sm" data-act="listadd" data-k="${k}">+ Add</button><button class="btn sm ghost" data-act="listreset" data-k="${k}">Restore defaults</button></div>
+  </div>`;
+}
+function renderSettings(){
+  const s=state.settings;
+  $('#app').innerHTML=`<h1>Settings ⚙️</h1>
+  <div class="panel">
+    <h3>Appearance &amp; Currency</h3>
+    <label class="tog"><input type="checkbox" data-ch="dark" ${s.dark?'checked':''}> 🌙 Cozy Espresso Dark Mode</label>
+    <label class="row" style="margin-top:10px">Currency symbol <input class="in auto" style="width:80px" data-ch="currency" value="${esc(s.currency)}"></label>
+  </div>
+  <div class="panel">
+    <h3>Reading Item Types</h3>
+    <p class="muted small">Comma-separated list. Add or customize formats (e.g. Light novel, Webtoon, Poetry).</p>
+    <input class="in" data-ch="types" value="${esc(s.types.join(', '))}">
+  </div>
+  ${listPanel('genres','Genres','Suggestions shown when you add a book. Removing one here doesn\'t remove it from books that already use it.')}
+  ${listPanel('tags','Tags','Tropes, pairings, vibes — anything you like to filter by.')}
+  ${s.features.spending?listPanel('stores','Stores','Suggestions for the store field in Spending.'):''}
+  <div class="panel">
+    <h3>Optional Sections</h3>
+    <p class="muted small">Hide features you don't use — your existing data stays safely stored.</p>
+    ${Object.entries(FEAT).map(([k,l])=>`<label class="tog"><input type="checkbox" data-ch="feat" data-k="${k}" ${s.features[k]?'checked':''}> ${l}</label>`).join('')}
+  </div>
+  <div class="panel">
+    <h3>Backup &amp; Data Ownership</h3>
+    <p class="muted small">Everything is saved locally in your browser (including uploaded covers). Export a JSON backup anytime to sync across phone, iPad, and laptop.</p>
+    <div class="row wrap">
+      <button class="btn" data-act="exportjson">💾 Backup (JSON)</button>
+      <button class="btn" data-act="exportcsv">📄 Export CSV</button>
+      <button class="btn" data-act="importjson">📥 Import backup</button>
+      <button class="btn" data-act="seed">✨ Add sample items</button>
+      <button class="btn danger" data-act="wipe">Delete everything</button>
+    </div>
+    <input type="file" id="importFile" accept=".json,application/json" hidden>
+    <p class="muted small" style="margin-bottom:0">${state.items.length} reading item${state.items.length===1?'':'s'} · ${state.series.length} series</p>
+  </div>`;
+}
+function exportCSV(){
+  const cols=['Title','Alternative titles','Author','Type','Status','Rating','Progress mode','Progress','Total','Genres','Tags','Collections','Series','Series #','Start','Finish','Times finished','Spent','Minutes read','Source','URL','Spice','Fluff','Tears','Humor','Notes'];
+  const q=v=>{v=String(v??'');return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const rows=state.items.map(it=>{const r=cur(it);return [it.title,it.altTitles.join(' | '),it.author,it.type,STATUSES[it.status],it.rating,it.progressMode,it.progress,it.total,it.genres.join(', '),it.tags.join(', '),it.collections.join(', '),seriesName(it.seriesId),it.seriesOrder,r.start,r.finish,it.reads.filter(x=>x.finish).length,spent(it),minutes(it),it.source,it.sourceUrl,it.moods.spice,it.moods.fluff,it.moods.tears,it.moods.humor,it.notes]});
+  download('\ufeff'+[cols,...rows].map(r=>r.map(q).join(',')).join('\n'),`shelfie-${today()}.csv`,'text/csv;charset=utf-8');
+}
+async function importData(file){
+  try{
+    const data=JSON.parse(await file.text());if(!data||!Array.isArray(data.items))throw 0;
+    const replace=await askDialog({
+      title:`Import ${data.items.length} items`,
+      message:'How would you like to import this backup?\n\n• Replace: overwrites your current library\n• Merge: keeps existing books and adds/updates from backup',
+      confirmText:'Replace library',
+      cancelText:'Merge into library'
+    });
+    if(replace){state=normalize(data)}else{
+      data.items.forEach(i=>{const k=state.items.findIndex(x=>x.id===i.id);if(k>=0)state.items[k]=normItem(i);else state.items.push(normItem(i))});
+      (data.series||[]).forEach(s=>{if(!state.series.some(x=>x.id===s.id))state.series.push(s)});
+      const ds=data.settings||{};
+      addToList('genres',[...(ds.genres||[]),...state.items.flatMap(i=>i.genres)]);
+      addToList('tags',[...(ds.tags||[]),...state.items.flatMap(i=>i.tags)]);
+      addToList('stores',[...(ds.stores||[]),...state.items.flatMap(i=>i.purchases.map(p=>p.store))]);
+    }
+    await saveNow();render();renderTimer();toast('Import complete ✨');
+  }catch(e){toast('That file doesn\'t look like a Shelfie backup')}
+}
+
+/* ---------- SAMPLE LIBRARY SEED ---------- */
+function seedSampleData(){
+  const hp=ensureSeries('Harry Potter');
+  hp.planned='7';hp.notes='Box set purchased together; tracking each book rating & reread separately.';
+  const ds=ensureSeries('Demon Slayer');
+  ds.planned='23';
+  const d0=today();
+  const yest=iso(new Date(Date.now()-86400000));
+  const samples=[
+    normItem({
+      title:'Demon Slayer: Kimetsu no Yaiba',
+      altTitles:['Kimetsu no Yaiba','鬼滅の刃','ดาบพิฆาตอสูร'],
+      author:'Koyoharu Gotouge',
+      type:'Manga',
+      coverTheme:'2',
+      genres:['Fantasy','Action','Historical'],
+      tags:['Found Family','Overpowered MC'],
+      collections:['Favorites'],
+      seriesId:ds.id,seriesOrder:'1',
+      status:'reading',owned:true,
+      progressMode:'volume',progress:7,total:23,
+      rating:5,moods:{spice:0,fluff:3,tears:5,humor:3},
+      notes:'Love the watercolor-style breathing techniques and Tanjiro’s empathy.',
+      quotes:[{id:uid(),text:'No matter how many people you may lose, you have no choice but to go on living.',page:'Vol. 1, Ch. 5'}],
+      favPages:[{id:uid(),page:'Ch. 19',note:'Hinokami Kagura scene'}],
+      purchases:[{id:uid(),label:'Vol. 1–7 Bundle',price:650,date:yest,store:'Kinokuniya'}],
+      reads:[{id:uid(),start:yest,finish:''}],
+      sessions:[{id:uid(),date:d0,minutes:45},{id:uid(),date:yest,minutes:60}],
+      activity:[d0,yest]
+    }),
+    normItem({
+      title:'SUPERMAN × BATMAN: Midnight Watch',
+      altTitles:['World’s Finest AU'],
+      author:'TiredAndBoredNerd',
+      type:'Fanfiction',
+      coverTheme:'0',
+      genres:['Romance'],
+      tags:['Superbat','Slow Burn','Angst'],
+      collections:['Comfort Books'],
+      status:'finished',
+      progressMode:'chapter',progress:12,total:12,
+      rating:5,moods:{spice:2,fluff:5,tears:2,humor:4},
+      source:'AO3',sourceUrl:'https://archiveofourown.org',
+      description:'An example of an AO3 fanfiction with no official cover image, rendered with the custom earth-tone editorial typography card.',
+      quotes:[{id:uid(),text:'You already knew who I was before I ever took off the cowl.',page:'Chapter 11'}],
+      favPages:[{id:uid(),page:'Chapter 12',note:'Rooftop coffee ending'}],
+      reads:[{id:uid(),start:yest,finish:d0}],
+      sessions:[{id:uid(),date:d0,minutes:85}],
+      activity:[d0]
+    }),
+    normItem({
+      title:"The Academy's Weapon Replicator",
+      altTitles:['นักจำลองอาวุธแห่งสถาบัน','아카데미의 무기복제자'],
+      author:'Seo-Jin',
+      type:'Manhwa',
+      coverTheme:'1',
+      genres:['Fantasy','Action'],
+      tags:['Magic Academy','Regression'],
+      collections:['Ongoing Weekly'],
+      status:'reading',
+      progressMode:'ongoing',progress:37,total:'',
+      rating:4,moods:{spice:0,fluff:2,tears:1,humor:3},
+      source:'Webtoon',
+      notes:'Tracking ongoing chapters without a fixed total end count.',
+      activity:[d0]
+    }),
+    normItem({
+      title:"Harry Potter and the Philosopher's Stone",
+      altTitles:['Harry Potter #1'],
+      author:'J.K. Rowling',
+      type:'Novel',
+      coverTheme:'3',
+      genres:['Fantasy','Adventure'],
+      tags:['Magic Academy','Found Family'],
+      collections:['Comfort Books','Favorites'],
+      seriesId:hp.id,seriesOrder:'1',
+      status:'finished',owned:true,
+      progressMode:'page',progress:223,total:223,
+      rating:5,moods:{spice:0,fluff:4,tears:2,humor:4},
+      purchases:[{id:uid(),label:'Complete 7-Book Box Set',price:1800,date:'2025-01-10',store:'Asia Books'}],
+      reads:[{id:uid(),start:'2025-01-12',finish:'2025-01-20'}],
+      sessions:[{id:uid(),date:yest,minutes:50}],
+      activity:[yest]
+    }),
+    normItem({
+      title:'Harry Potter and the Chamber of Secrets',
+      altTitles:['Harry Potter #2'],
+      author:'J.K. Rowling',
+      type:'Novel',
+      coverTheme:'5',
+      genres:['Fantasy','Mystery'],
+      tags:['Magic Academy'],
+      collections:['Summer Reading'],
+      seriesId:hp.id,seriesOrder:'2',
+      status:'want',owned:true,
+      progressMode:'page',progress:0,total:251
+    })
+  ];
+  samples.forEach(s=>{
+    state.items.push(s);
+    addToList('genres',s.genres);
+    addToList('tags',s.tags);
+    addToList('stores',s.purchases.map(p=>p.store));
+  });
+  save();render();toast('Sample library loaded ✨');
+}
+
+/* ---------- TIMER ---------- */
+const elapsed=()=>{const t=state.timer;return t?t.acc+(t.startedAt?Date.now()-t.startedAt:0):0};
+async function timerStart(id){
+  if(state.timer){
+    const ok=await askDialog({title:'Replace active timer?',message:'A reading timer is already running. Discard it and start a new one?',confirmText:'Start new timer',danger:true});
+    if(!ok)return;
+  }
+  state.timer={itemId:id,startedAt:Date.now(),acc:0};
+  const it=byId(id);if(['want','hold'].includes(it.status))setStatus(it,'reading');
+  save();renderTimer();refresh();toast('Timer started ⏱️ Happy reading!');
+}
+function renderTimer(){
+  const el=$('#timerBar'),t=state.timer,it=t&&byId(t.itemId);
+  if(!t||!it||!state.settings.features.timer){el.classList.add('hidden');return}
+  el.classList.remove('hidden');
+  el.innerHTML=`${mini(it)}<div class="tinfo"><div class="ttl">${esc(it.title)}</div><div id="tclock" class="clock">${fmtClock(elapsed())}</div></div>
+  ${t.startedAt?'<button class="btn sm" data-act="tpause">⏸</button>':'<button class="btn sm" data-act="tresume">▶</button>'}
+  <button class="btn sm primary" data-act="tstop">Stop &amp; save</button>
+  <button class="btn sm ghost" data-act="tcancel" title="Discard">✕</button>`;
+}
+setInterval(()=>{const c=$('#tclock');if(c&&state&&state.timer)c.textContent=fmtClock(elapsed())},1000);
+
+/* ---------- actions ---------- */
+const sub=(el,list,obj)=>{const it=byId(el.dataset.id);it[list].push({id:uid(),...obj});touch(it);save();refresh()};
+const A={
+  nav:el=>{ui.view=el.dataset.v;closeModal();render();scrollTo(0,0)},
+  add:()=>openForm(null),
+  seed:()=>seedSampleData(),
+  open:el=>openDetail(el.dataset.id),
+  edit:el=>openForm(el.dataset.id),
+  close:closeModal,
+  chip:el=>{ui.f[el.dataset.k]=el.dataset.v;ui.view='library';closeModal();render()},
+  clearf:()=>{Object.assign(ui.f,{q:'',type:'all',status:'all',genre:'',tag:'',coll:'',series:''});render()},
+  rate:el=>{const it=byId(el.dataset.id),v=+el.dataset.v;it.rating=it.rating===v?0:v;touch(it);save();refresh()},
+  mood:el=>{const it=byId(el.dataset.id),k=el.dataset.k,v=+el.dataset.v;it.moods[k]=it.moods[k]===v?0:v;touch(it);save();refresh()},
+  prog:el=>{const it=byId(el.dataset.id);setProgress(it,(+it.progress||0)+(+el.dataset.d))},
+  del:async el=>{
+    const it=byId(el.dataset.id);if(!it)return;
+    const ok=await askDialog({title:'Delete reading item?',message:`Delete "${it.title}" from your shelf? This cannot be undone.`,confirmText:'Delete',danger:true});
+    if(!ok)return;
+    state.items=state.items.filter(x=>x!==it);
+    if(state.timer&&state.timer.itemId===it.id)state.timer=null;
+    save();closeModal();render();renderTimer();toast('Deleted');
+  },
+  reread:el=>{const it=byId(el.dataset.id);it.reads.push({id:uid(),start:today(),finish:''});it.progress=0;it.status='reading';logDay(it);touch(it);save();refresh();toast('Reread started 🔁 — your previous read is preserved')},
+  delread:async el=>{
+    const it=byId(el.dataset.id);
+    const ok=await askDialog({title:'Remove reading entry?',message:'Remove this read from the reading history?',confirmText:'Remove',danger:true});
+    if(!ok)return;
+    it.reads=it.reads.filter(r=>r.id!==el.dataset.rid);touch(it);save();refresh();
+  },
+  delsub:el=>{const it=byId(el.dataset.id),l=el.dataset.list;it[l]=it[l].filter(x=>x.id!==el.dataset.sid);touch(it);save();refresh()},
+  addsess:el=>{const d=$('#s-date').value,m=+$('#s-min').value;if(!d||!(m>0))return toast('Enter a date and minutes');const it=byId(el.dataset.id);it.sessions.push({id:uid(),date:d,minutes:m});touch(it);save();refresh();toast(`Logged ${fmtMin(m)}`)},
+  addquote:el=>{const t=$('#q-text').value.trim();if(!t)return toast('Write the quote first');sub(el,'quotes',{text:t,page:$('#q-page').value.trim()})},
+  addfav:el=>{const p=$('#f-page').value.trim();if(!p)return toast('Enter a page or chapter');sub(el,'favPages',{page:p,note:$('#f-note').value.trim()})},
+  addbuy:el=>{
+    const p=$('#b-price').value;if(p==='')return toast('Enter a price');
+    const store=canon('stores',$('#b-store').value);if(store)addToList('stores',[store]);
+    sub(el,'purchases',{label:$('#b-label').value.trim(),price:+p,date:$('#b-date').value,store});
+  },
+  cpick:el=>pick(el.closest('.combo'),+el.dataset.i),
+  cremove:el=>{const k=el.dataset.k,s=cstate[k];s.vals=s.vals.filter(x=>x!==el.dataset.v);const c=comboEl(k);if(c)c.querySelector('.cchips').innerHTML=chipsHTML(k)},
+  lookup:()=>doLookup(),
+  pickres:el=>applyResult(lookupResults[+el.dataset.i]),
+  listadd:el=>{const k=el.dataset.k||el.dataset.la,inp=$('#la-'+k),v=csv(inp.value);if(!v.length)return toast('Type something to add');addToList(k,v);save();render();const n=$('#la-'+k);if(n)n.focus();toast(`Added ${v.length} item${v.length>1?'s':''}`)},
+  listdel:el=>{const k=el.dataset.k;state.settings[k]=state.settings[k].filter(x=>x!==el.dataset.v);save();render();toast('Removed from suggestions')},
+  listreset:el=>{addToList(el.dataset.k,DEFAULT_LISTS[el.dataset.k]);save();render();toast('Defaults restored (your own items kept)')},
+  tstart:el=>timerStart(el.dataset.id),
+  tpause:()=>{state.timer.acc=elapsed();state.timer.startedAt=null;save();renderTimer()},
+  tresume:()=>{state.timer.startedAt=Date.now();save();renderTimer()},
+  tstop:()=>{
+    const t=state.timer,it=byId(t.itemId),ms=elapsed();state.timer=null;
+    if(it&&ms>=30000){
+      const m=Math.max(1,Math.round(ms/60000));
+      it.sessions.push({id:uid(),date:today(),minutes:m});logDay(it);touch(it);
+      toast(`Logged ${fmtMin(m)} 📖 — update your progress!`);
+    }else toast('Under 30 seconds — not logged');
+    save();renderTimer();render();if(it)openDetail(it.id);
+  },
+  tcancel:async()=>{
+    const ok=await askDialog({title:'Discard timer?',message:'Discard this reading timer without saving?',confirmText:'Discard',danger:true});
+    if(ok){state.timer=null;save();renderTimer()}
+  },
+  editseries:el=>openSeriesForm(el.dataset.id),
+  delseries:async el=>{
+    const s=state.series.find(x=>x.id===el.dataset.id);if(!s)return;
+    const ok=await askDialog({title:'Delete series?',message:`Delete series "${s.name}"? Your books will remain in your library.`,confirmText:'Delete series',danger:true});
+    if(!ok)return;
+    state.series=state.series.filter(x=>x!==s);
+    state.items.forEach(i=>{if(i.seriesId===s.id)i.seriesId=''});
+    if(ui.f.series===s.id)ui.f.series='';
+    save();render();
+  },
+  seriesview:el=>{Object.assign(ui.f,{series:el.dataset.id,sort:'series',type:'all',status:'all'});ui.view='library';closeModal();render()},
+  calmove:el=>{const d=+el.dataset.d,n=new Date();if(!d){ui.cal={y:n.getFullYear(),m:n.getMonth()};ui.calDay=today()}else{const x=new Date(ui.cal.y,ui.cal.m+d,1);ui.cal={y:x.getFullYear(),m:x.getMonth()}}render()},
+  calday:el=>{ui.calDay=el.dataset.d;render();const p=$('#dayPanel');if(p&&innerWidth<720)p.scrollIntoView({behavior:'smooth',block:'start'})},
+  caladd:()=>{
+    const ds=ui.calDay,inp=document.querySelector('.combo[data-combo=book] .cin');
+    let id=cstate.book&&cstate.book.sel;
+    if(!id&&inp){const q=inp.value.trim().toLowerCase(),m=state.items.find(i=>i.title.toLowerCase()===q);if(m)id=m.id}
+    if(!id)return toast('Pick a book from the list first');
+    const it=byId(id),min=+$('#cal-min').value||0,fin=$('#cal-fin').checked,r=cur(it);
+    if(min>0)it.sessions.push({id:uid(),date:ds,minutes:min});else if(!it.activity.includes(ds))it.activity.push(ds);
+    if(fin){r.finish=ds;if(!r.start)r.start=ds;it.status='finished';if(tracked(it))it.progress=+it.total}
+    else if(it.status==='want'||it.status==='hold'){it.status='reading';if(!r.start)r.start=ds}
+    touch(it);save();render();toast(`Added “${it.title}” to ${fmtDate(ds)}`);
+  },
+  calrm:async el=>{
+    const it=byId(el.dataset.id),ds=ui.calDay;
+    const ok=await askDialog({title:'Remove from day?',message:`Remove “${it.title}” from ${fmtDate(ds)}?\nAny reading time logged on that day will also be removed.`,confirmText:'Remove',danger:true});
+    if(!ok)return;
+    it.sessions=it.sessions.filter(s=>s.date!==ds);
+    it.activity=it.activity.filter(d=>d!==ds);
+    it.reads.forEach(r=>{if(r.finish===ds){r.finish='';if(r===cur(it)&&it.status==='finished')it.status='reading'}});
+    touch(it);save();render();
+  },
+  coverclear:()=>{formCover='';$('#coverUrl').value='';updateCoverPreview()},
+  theme:el=>{
+    formTheme=el.dataset.v;
+    document.querySelectorAll('.swatches .swatch, .swatches .chip').forEach(b=>b.classList.toggle('on',b.dataset.v===formTheme));
+    updateCoverPreview();
+  },
+  exportjson:()=>{download(JSON.stringify({app:'shelfie',version:2,exportedAt:new Date().toISOString(),...state}),`shelfie-backup-${today()}.json`,'application/json');toast('Backup downloaded 💾')},
+  exportcsv:exportCSV,
+  importjson:()=>$('#importFile').click(),
+  wipe:async()=>{
+    const ok1=await askDialog({title:'Delete everything?',message:'This will permanently delete ALL books, series, and settings. Make sure you have exported a backup first!',confirmText:'Continue',danger:true});
+    if(!ok1)return;
+    const ok2=await askDialog({title:'Are you completely sure?',message:'All reading data in this browser will be erased.',confirmText:'Delete everything',danger:true});
+    if(ok2){state=normalize(null);save();render();renderTimer();toast('Everything deleted')}
+  }
+};
+const C={
+  status:t=>{setStatus(byId(t.dataset.id),t.value);save();refresh()},
+  progset:t=>setProgress(byId(t.dataset.id),+t.value||0),
+  notes:t=>{const it=byId(t.dataset.id);it.notes=t.value;touch(it);save();toast('Notes saved')},
+  readdate:t=>{const it=byId(t.dataset.id),r=it.reads.find(x=>x.id===t.dataset.rid);r[t.dataset.k]=t.value;touch(it);save();refresh()},
+  year:t=>{ui.statsYear=+t.value;render()},
+  dark:t=>{state.settings.dark=t.checked;save();render()},
+  currency:t=>{state.settings.currency=t.value.trim()||'฿';save()},
+  types:t=>{const v=csv(t.value);state.settings.types=v.length?v:[...DEFAULT_TYPES];save();render();toast('Types updated')},
+  feat:t=>{state.settings.features[t.dataset.k]=t.checked;save();render();renderTimer()}
+};
+document.addEventListener('mousedown',e=>{if(e.target.closest('.dd'))e.preventDefault()});
+document.addEventListener('click',e=>{
+  if(e.target.id==='modal')return closeModal();
+  const cb=e.target.closest('.cbox');if(cb&&e.target===cb){cb.querySelector('.cin').focus();return}
+  const el=e.target.closest('[data-act]');if(el&&A[el.dataset.act]){e.preventDefault();A[el.dataset.act](el,e)}
+});
+document.addEventListener('focusin',e=>{if(e.target.classList.contains('cin'))openDD(e.target.closest('.combo'))});
+document.addEventListener('focusout',e=>{const el=e.target.closest&&e.target.closest('.combo');if(el)setTimeout(()=>{if(!el.contains(document.activeElement))hideDD(el)},150)});
+document.addEventListener('change',async e=>{
+  const t=e.target;
+  if(t.dataset.f){ui.f[t.dataset.f]=t.value;return render()}
+  if(t.dataset.ch&&C[t.dataset.ch])return C[t.dataset.ch](t);
+  if(t.id==='coverFile'&&t.files[0]){try{formCover=await fileToCover(t.files[0]);$('#coverUrl').value='';updateCoverPreview()}catch(_){toast('Could not read that image')}}
+  if(t.id==='importFile'&&t.files[0]){importData(t.files[0]);t.value=''}
+  if(t.name==='type'&&t.closest('#itemForm'))updateCoverPreview();
+});
+document.addEventListener('input',e=>{
+  const t=e.target;
+  if(t.classList.contains('cin')){
+    const el=t.closest('.combo'),k=el.dataset.combo;
+    if(COMBO[k].books)cstate[k].sel='';
+    if(COMBO[k].multi&&t.value.includes(',')){const parts=t.value.split(',');t.value=parts.pop();addComboVals(k,parts.filter(x=>x.trim()))}
+    return openDD(el);
+  }
+  if(t.id==='search'){ui.f.q=t.value;renderGrid()}
+  if(t.id==='coverUrl'){formCover=t.value.trim();updateCoverPreview()}
+  if(['title','author'].includes(t.name)&&t.closest('#itemForm'))updateCoverPreview();
+});
+document.addEventListener('submit',e=>{if(e.target.id==='itemForm')saveForm(e);if(e.target.id==='seriesForm')saveSeries(e)});
+document.addEventListener('keydown',e=>{
+  const t=e.target;
+  if(!$('#confirmModal').classList.contains('hidden')){if(e.key==='Escape')$('#dlg-cancel').click();return}
+  if(t.classList&&t.classList.contains('cin'))return comboKey(e);
+  if(t.id==='lk-q'&&e.key==='Enter'){e.preventDefault();return doLookup()}
+  if(t.dataset&&t.dataset.la&&e.key==='Enter'){e.preventDefault();return A.listadd(t)}
+  if(e.key==='Escape'&&!$('#modal').classList.contains('hidden'))closeModal();
+});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&state)saveNow()});
+window.addEventListener('pagehide',()=>state&&saveNow());
+
+/* ---------- start ---------- */
+(async()=>{
+  state=await loadState();
+  if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});
+  render();renderTimer();
+})();
+</script>
+<script>
+/* ---------- PWA: offline support ---------- */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js').then(reg=>{
+      reg.addEventListener('updatefound',()=>{
+        const w=reg.installing;if(!w)return;
+        w.addEventListener('statechange',()=>{
+          if(w.state==='installed'&&navigator.serviceWorker.controller&&typeof toast==='function')
+            toast('✨ Update ready: close and reopen Shelfie to use it');
+        });
+      });
+    }).catch(()=>{});
+  });
+}
+</script>
+</body>
+</html>
