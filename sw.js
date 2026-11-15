@@ -8,15 +8,18 @@
  * What is cached
  *  - App files (index.html, manifest, icons): saved on install, served instantly from
  *    cache, quietly checked for changes in the background when online.
+ *  - Google Fonts (Fraunces, Plus Jakarta Sans): saved the first time they load online,
+ *    after that they work offline too. Until then the app uses its fallback fonts.
  *  - Remote book covers (<img> only): saved the first time they appear, so they still show
  *    offline. Capped at MAX_COVERS, oldest dropped first.
  *  - Book search / AniList / Google Books APIs: never touched; they need internet.
  *  - Your library lives in IndexedDB, not in these caches, so updating or clearing
  *    them never touches your books.
  */
-const VERSION = 'v2';
+const VERSION = 'v3';
 const APP_CACHE = `shelfie-app-${VERSION}`;
 const COVER_CACHE = 'shelfie-covers-v1';
+const FONT_CACHE = 'shelfie-fonts-v1';
 const MAX_COVERS = 80;
 
 const PRECACHE = [
@@ -51,7 +54,7 @@ self.addEventListener('activate', (event) => {
     (async () => {
       const keys = await caches.keys();
       const oldApp = keys.filter((k) => k.startsWith('shelfie-app-') && k !== APP_CACHE);
-      const stale = keys.filter((k) => k.startsWith('shelfie-') && k !== APP_CACHE && k !== COVER_CACHE);
+      const stale = keys.filter((k) => k.startsWith('shelfie-') && k !== APP_CACHE && k !== COVER_CACHE && k !== FONT_CACHE);
       await Promise.all(stale.map((k) => caches.delete(k)));
       await self.clients.claim();
       if (oldApp.length) await tellClients({ type: 'update-available' }); // an upgrade, not a first install
@@ -61,11 +64,11 @@ self.addEventListener('activate', (event) => {
 
 const cacheable = (res) => res && (res.ok || res.type === 'opaque');
 
-async function staleWhileRevalidate(event, cacheName) {
+async function staleWhileRevalidate(event, cacheName, init) {
   const request = event.request;
   const cache = await caches.open(cacheName);
   const hit = await cache.match(request);
-  const refresh = fetch(request, { cache: 'no-cache' })
+  const refresh = fetch(request, init)
     .then((res) => {
       if (cacheable(res)) cache.put(request, res.clone());
       return res;
@@ -113,6 +116,15 @@ async function openApp(event) {
   }
 }
 
+async function cacheFirst(request, cacheName) {
+  const cache = await caches.open(cacheName);
+  const hit = await cache.match(request);
+  if (hit) return hit;
+  const res = await fetch(request);
+  if (cacheable(res)) cache.put(request, res.clone());
+  return res;
+}
+
 async function trim(cache, max) {
   const keys = await cache.keys(); // oldest first
   await Promise.all(keys.slice(0, Math.max(0, keys.length - max)).map((k) => cache.delete(k)));
@@ -144,7 +156,15 @@ self.addEventListener('fetch', (event) => {
 
   if (url.origin === self.location.origin) {
     if (request.mode === 'navigate') event.respondWith(openApp(event));
-    else event.respondWith(staleWhileRevalidate(event, APP_CACHE));
+    else event.respondWith(staleWhileRevalidate(event, APP_CACHE, { cache: 'no-cache' }));
+    return;
+  }
+  if (url.hostname === 'fonts.googleapis.com') {
+    event.respondWith(staleWhileRevalidate(event, FONT_CACHE)); // the stylesheet
+    return;
+  }
+  if (url.hostname === 'fonts.gstatic.com') {
+    event.respondWith(cacheFirst(request, FONT_CACHE)); // the font files
     return;
   }
   if (request.destination === 'image') {
